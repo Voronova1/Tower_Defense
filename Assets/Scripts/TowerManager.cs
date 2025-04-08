@@ -15,9 +15,11 @@ public class TowerManager : MonoBehaviour
     private Camera mainCamera;
 
     private PlayerInput playerInput;
-    private InputAction rightClickAction;
 
     private GameManager gameManager;
+
+    private InputAction touchPositionAction;
+    private InputAction touchPressAction;
 
     void Start()
     {
@@ -29,89 +31,107 @@ public class TowerManager : MonoBehaviour
         contextMenuUp.SetActive(false);
         contextMenuMaxUp.SetActive(false);
 
-        // Настройка Input System
         playerInput = GetComponent<PlayerInput>();
-        rightClickAction = playerInput.actions["RightClick"];
+        touchPressAction = playerInput.actions.FindAction("Fire", true); // Стандартное действие
+        touchPositionAction = playerInput.actions.FindAction("Point", true); // Для позиции
+
+        if (touchPressAction == null || touchPositionAction == null)
+        {
+            Debug.LogError("Не найдены необходимые Input Actions!");
+            enabled = false;
+        }
     }
 
     void Update()
     {
-        // Обработка правого клика через Input System
-        if (rightClickAction.WasPressedThisFrame())
+        // Обработка тапа вместо правого клика
+        if (touchPressAction == null || touchPositionAction == null) return;
+
+        if (touchPressAction.WasPressedThisFrame())
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            Ray ray = mainCamera.ScreenPointToRay(mousePosition);
+            Vector2 touchPosition = touchPositionAction.ReadValue<Vector2>();
+
+            bool isClickInsideMenu =
+            (contextMenu.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenu.GetComponent<RectTransform>(), touchPosition)) ||
+            (contextMenuUp.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenuUp.GetComponent<RectTransform>(), touchPosition)) ||
+            (contextMenuMaxUp.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenuMaxUp.GetComponent<RectTransform>(), touchPosition));
+
+            if (isClickInsideMenu)
+            {
+                // Нажатие внутри меню — игнорируем
+                return;
+            }
+
+            Ray ray = mainCamera.ScreenPointToRay(touchPosition);
 
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 if (hit.collider.CompareTag("BuildPoint"))
                 {
                     selectedBuildPoint = hit.collider.gameObject;
-                    ShowContextMenu(mousePosition);
+                    ShowContextMenu(touchPosition);
                 }
                 if (hit.collider.CompareTag("Tower"))
                 {
                     selectedTower = hit.collider.gameObject;
-                    ShowContextMenuUp(mousePosition);
+                    ShowContextMenuUp(touchPosition);
                 }
                 if (hit.collider.CompareTag("TowerMaxUp"))
                 {
                     selectedTower = hit.collider.gameObject;
-                    ShowContextMenuMaxUp(mousePosition);
+                    ShowContextMenuMaxUp(touchPosition);
                 }
             }
         }
 
-        // Закрытие меню по левому клику
-        if (Mouse.current.leftButton.wasPressedThisFrame && contextMenu.activeSelf)
+        // Закрытие меню по тапу вне области
+        if (touchPressAction.WasPressedThisFrame())
         {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(contextMenu.GetComponent<RectTransform>(), Mouse.current.position.ReadValue()))
+            Vector2 touchPos = touchPositionAction.ReadValue<Vector2>();
+
+            if (contextMenu.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenu.GetComponent<RectTransform>(), touchPos))
             {
                 contextMenu.SetActive(false);
             }
-        }
-        if (Mouse.current.leftButton.wasPressedThisFrame && contextMenuUp.activeSelf)
-        {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(contextMenuUp.GetComponent<RectTransform>(), Mouse.current.position.ReadValue()))
+            if (contextMenuUp.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenuUp.GetComponent<RectTransform>(), touchPos))
             {
                 contextMenuUp.SetActive(false);
             }
-        }
-        if (Mouse.current.leftButton.wasPressedThisFrame && contextMenuMaxUp.activeSelf)
-        {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(contextMenuMaxUp.GetComponent<RectTransform>(), Mouse.current.position.ReadValue()))
+            if (contextMenuMaxUp.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenuMaxUp.GetComponent<RectTransform>(), touchPos))
             {
                 contextMenuMaxUp.SetActive(false);
             }
+
+
         }
-    }
 
-    void ShowContextMenu(Vector2 screenPosition)
-    {
-        contextMenu.SetActive(true);
+        void ShowContextMenu(Vector2 screenPosition)
+        {
+            contextMenu.SetActive(true);
 
-        // Конвертируем позицию для UI
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-        contextMenu.GetComponent<RectTransform>().localPosition = localPoint;
-    }
-    void ShowContextMenuUp(Vector2 screenPosition)
-    {
-        contextMenuUp.transform.GetChild(2).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 1.6f)).ToString();
-        contextMenuUp.transform.GetChild(3).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
-        contextMenuUp.SetActive(true);
+            // Конвертируем позицию для UI
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+            contextMenu.GetComponent<RectTransform>().localPosition = localPoint;
+        }
+        void ShowContextMenuUp(Vector2 screenPosition)
+        {
+            contextMenuUp.transform.GetChild(2).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 1.6f)).ToString();
+            contextMenuUp.transform.GetChild(3).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
+            contextMenuUp.SetActive(true);
 
-        // Конвертируем позицию для UI
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-        contextMenuUp.GetComponent<RectTransform>().localPosition = localPoint;
-    }
-    void ShowContextMenuMaxUp(Vector2 screenPosition)
-    {
-        contextMenuMaxUp.transform.GetChild(1).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
-        contextMenuMaxUp.SetActive(true);
+            // Конвертируем позицию для UI
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+            contextMenuUp.GetComponent<RectTransform>().localPosition = localPoint;
+        }
+        void ShowContextMenuMaxUp(Vector2 screenPosition)
+        {
+            contextMenuMaxUp.transform.GetChild(1).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
+            contextMenuMaxUp.SetActive(true);
 
-        // Конвертируем позицию для UI
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-        contextMenuMaxUp.GetComponent<RectTransform>().localPosition = localPoint;
+            // Конвертируем позицию для UI
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+            contextMenuMaxUp.GetComponent<RectTransform>().localPosition = localPoint;
+        }
     }
 
     public void BuildTower(GameObject towerPrefab)
@@ -150,3 +170,4 @@ public class TowerManager : MonoBehaviour
         }
     }
 }
+
