@@ -56,11 +56,12 @@ namespace UnityStandardAssets.Water
         {
             if (reflection)
             {
-                reflection.WaterTileBeingRendered(transform, Camera.current);
-            }
-            if (waterBase)
-            {
-                waterBase.WaterTileBeingRendered(transform, Camera.current);
+                // Измененный вызов - теперь проверяем, активна ли камера
+                Camera cam = Camera.current;
+                if (cam && cam.isActiveAndEnabled)
+                {
+                    reflection.WaterTileBeingRendered(transform, cam);
+                }
             }
         }
     }

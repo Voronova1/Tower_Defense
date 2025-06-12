@@ -123,4 +123,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   health: 10
-  loot: 150
+  loot: 30

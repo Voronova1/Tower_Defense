@@ -14,7 +14,7 @@ public class WaveSpawner : MonoBehaviour
     public Wave[] waves;            // Массив волн
     public Transform[] spawnPoints; // Точки спавна
     public float timeBetweenWaves = 5f; // Пауза между волнами
-    public bool loopWaves = true;   // Зацикливать волны
+    public bool loopWaves = false;   // Зацикливать волны
 
     private int currentWaveIndex = 0;
     private bool isSpawning = false;
