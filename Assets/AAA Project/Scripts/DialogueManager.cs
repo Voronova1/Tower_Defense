@@ -12,21 +12,51 @@ public class DialogueManager : MonoBehaviour
         [TextArea(3, 5)]
         public string text;
         public Sprite characterSprite;
+        public AudioClip soundEffect; // Звук для конкретной реплики
     }
 
     public DialogueLine[] dialogueLines;
-    public TMP_Text dialogueText; // Изменили на TMP_Text
+    public TMP_Text dialogueText;
     public Image characterImage;
     public GameObject tapPrompt;
     public string nextSceneName = "level_1";
+    public AudioSource audioSource; // Источник звука
+    public AudioClip defaultSlideSound; // Звук по умолчанию
 
     private int currentLine = 0;
     private float timeSinceLastTap = 0f;
     private bool promptActive = false;
 
+    private PlayerInput playerInput;
+    private InputAction touchPressAction;
+
     void Start()
     {
-        // Добавляем CanvasGroup если отсутствует
+        // Инициализация системы ввода
+        playerInput = GetComponent<PlayerInput>();
+        if (playerInput == null)
+        {
+            playerInput = gameObject.AddComponent<PlayerInput>();
+        }
+
+        touchPressAction = playerInput.actions.FindAction("Fire", true);
+        if (touchPressAction == null)
+        {
+            Debug.LogError("Не найдено действие Fire в Input System");
+        }
+
+        // Инициализация AudioSource если отсутствует
+        if (audioSource == null)
+        {
+            audioSource = gameObject.GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+            }
+        }
+
+        // Инициализация UI
         if (dialogueText.GetComponent<CanvasGroup>() == null)
         {
             dialogueText.gameObject.AddComponent<CanvasGroup>();
@@ -45,9 +75,8 @@ public class DialogueManager : MonoBehaviour
             ShowTapPrompt();
         }
 
-        // Обработка ввода через новую систему
-        if (Mouse.current.leftButton.wasPressedThisFrame ||
-           (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame))
+        // Обработка ввода
+        if (touchPressAction != null && touchPressAction.WasPressedThisFrame())
         {
             HandleTap();
         }
@@ -61,15 +90,30 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = dialogueLines[index].text;
         characterImage.sprite = dialogueLines[index].characterSprite;
 
+        // Воспроизведение звука для текущей реплики
+        PlaySlideSound(dialogueLines[index].soundEffect);
+
         timeSinceLastTap = 0f;
         if (promptActive) HideTapPrompt();
 
-        // Анимация с проверкой CanvasGroup
         CanvasGroup cg = dialogueText.GetComponent<CanvasGroup>();
         if (cg != null)
         {
             cg.alpha = 0;
             LeanTween.alphaCanvas(cg, 1f, 0.3f);
+        }
+    }
+
+    void PlaySlideSound(AudioClip clip)
+    {
+        if (audioSource == null) return;
+
+        // Используем конкретный звук для реплики или звук по умолчанию
+        AudioClip soundToPlay = clip != null ? clip : defaultSlideSound;
+
+        if (soundToPlay != null)
+        {
+            audioSource.PlayOneShot(soundToPlay);
         }
     }
 
