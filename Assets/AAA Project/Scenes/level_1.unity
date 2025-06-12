@@ -2313,7 +2313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
-  - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
+  - mobPrefab: {fileID: 5483803760368986092, guid: 41a4f43d102aab94db7c85e67d3ab6c3, type: 3}
     mobCount: 6
     spawnRate: 1
   - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
@@ -2809,13 +2809,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.39043057, y: -0.585017, z: 0.4246568, w: 0.5700752}
-  m_LocalPosition: {x: 24.23, y: 59, z: 12.29}
+  m_LocalRotation: {x: 0.38457412, y: -0.5848332, z: 0.3941405, w: 0.595589}
+  m_LocalPosition: {x: 24.8, y: 59, z: 12.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 70.392, y: -88.183, z: 4.676}
+  m_LocalEulerAnglesHint: {x: 66.796, y: -87.069, z: 2.861}
 --- !u!1 &986631778
 GameObject:
   m_ObjectHideFlags: 0
