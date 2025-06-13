@@ -1,173 +1,235 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(PlayerInput))] // Добавляем автоматически
+[RequireComponent(typeof(PlayerInput))]
 public class TowerManager : MonoBehaviour
 {
+    [Header("Context Menus")]
     public GameObject contextMenu;
     public GameObject contextMenuUp;
     public GameObject contextMenuMaxUp;
     public RectTransform menuParent;
+
     private GameObject selectedBuildPoint;
     private GameObject selectedTower;
     private Camera mainCamera;
-
     private PlayerInput playerInput;
-
-    private GameManager gameManager;
-
     private InputAction touchPositionAction;
     private InputAction touchPressAction;
+    private bool inputBlocked = false;
 
     void Start()
     {
-        // Автоматически находим GameManager
-        gameManager = FindObjectOfType<GameManager>();
-
         mainCamera = Camera.main;
-        contextMenu.SetActive(false);
-        contextMenuUp.SetActive(false);
-        contextMenuMaxUp.SetActive(false);
-
         playerInput = GetComponent<PlayerInput>();
-        touchPressAction = playerInput.actions.FindAction("Fire", true); // Стандартное действие
-        touchPositionAction = playerInput.actions.FindAction("Point", true); // Для позиции
+
+        InitializeInputActions();
+        HideAllContextMenus();
+
+        GameManager.OnGameEnded += HandleGameEnded;
+    }
+
+    void OnDestroy()
+    {
+        GameManager.OnGameEnded -= HandleGameEnded;
+    }
+
+    void InitializeInputActions()
+    {
+        touchPressAction = playerInput.actions.FindAction("Fire");
+        touchPositionAction = playerInput.actions.FindAction("Point");
 
         if (touchPressAction == null || touchPositionAction == null)
         {
-            Debug.LogError("Не найдены необходимые Input Actions!");
+            Debug.LogError("Required Input Actions not found!");
             enabled = false;
         }
     }
 
+    void HandleGameEnded(bool gameEnded)
+    {
+        inputBlocked = gameEnded;
+        HideAllContextMenus();
+
+        // Блокируем взаимодействие через отключение компонентов Button
+        SetButtonsInteractable(contextMenu, !gameEnded);
+        SetButtonsInteractable(contextMenuUp, !gameEnded);
+        SetButtonsInteractable(contextMenuMaxUp, !gameEnded);
+    }
+
+    void SetButtonsInteractable(GameObject menu, bool interactable)
+    {
+        if (menu == null) return;
+
+        var buttons = menu.GetComponentsInChildren<Button>(true);
+        foreach (var button in buttons)
+        {
+            button.interactable = interactable;
+        }
+    }
+
+    void HideAllContextMenus()
+    {
+        if (contextMenu != null) contextMenu.SetActive(false);
+        if (contextMenuUp != null) contextMenuUp.SetActive(false);
+        if (contextMenuMaxUp != null) contextMenuMaxUp.SetActive(false);
+    }
+
     void Update()
     {
-        // Обработка тапа вместо правого клика
-        if (touchPressAction == null || touchPositionAction == null) return;
+        if (inputBlocked) return;
 
+        HandleTouchInput();
+    }
+
+    void HandleTouchInput()
+    {
         if (touchPressAction.WasPressedThisFrame())
         {
             Vector2 touchPosition = touchPositionAction.ReadValue<Vector2>();
 
-            bool isClickInsideMenu =
-            (contextMenu.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenu.GetComponent<RectTransform>(), touchPosition)) ||
-            (contextMenuUp.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenuUp.GetComponent<RectTransform>(), touchPosition)) ||
-            (contextMenuMaxUp.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(contextMenuMaxUp.GetComponent<RectTransform>(), touchPosition));
-
-            if (isClickInsideMenu)
-            {
-                // Нажатие внутри меню — игнорируем
+            if (IsClickInsideAnyMenu(touchPosition))
                 return;
-            }
 
-            Ray ray = mainCamera.ScreenPointToRay(touchPosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.collider.CompareTag("BuildPoint"))
-                {
-                    selectedBuildPoint = hit.collider.gameObject;
-                    ShowContextMenu(touchPosition);
-                }
-                if (hit.collider.CompareTag("Tower"))
-                {
-                    selectedTower = hit.collider.gameObject;
-                    ShowContextMenuUp(touchPosition);
-                }
-                if (hit.collider.CompareTag("TowerMaxUp"))
-                {
-                    selectedTower = hit.collider.gameObject;
-                    ShowContextMenuMaxUp(touchPosition);
-                }
-            }
+            ProcessRaycast(touchPosition);
+            CheckForMenuClose(touchPosition);
         }
+    }
 
-        // Закрытие меню по тапу вне области
-        if (touchPressAction.WasPressedThisFrame())
+    bool IsClickInsideAnyMenu(Vector2 touchPosition)
+    {
+        return (contextMenu != null && contextMenu.activeSelf && IsPositionInMenu(contextMenu, touchPosition)) ||
+               (contextMenuUp != null && contextMenuUp.activeSelf && IsPositionInMenu(contextMenuUp, touchPosition)) ||
+               (contextMenuMaxUp != null && contextMenuMaxUp.activeSelf && IsPositionInMenu(contextMenuMaxUp, touchPosition));
+    }
+
+    bool IsPositionInMenu(GameObject menu, Vector2 position)
+    {
+        return RectTransformUtility.RectangleContainsScreenPoint(
+            menu.GetComponent<RectTransform>(),
+            position
+        );
+    }
+
+    void ProcessRaycast(Vector2 touchPosition)
+    {
+        if (inputBlocked) return;
+
+        Ray ray = mainCamera.ScreenPointToRay(touchPosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            Vector2 touchPos = touchPositionAction.ReadValue<Vector2>();
-
-            if (contextMenu.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenu.GetComponent<RectTransform>(), touchPos))
+            if (hit.collider.CompareTag("BuildPoint"))
             {
-                contextMenu.SetActive(false);
+                selectedBuildPoint = hit.collider.gameObject;
+                ShowContextMenu(touchPosition);
             }
-            if (contextMenuUp.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenuUp.GetComponent<RectTransform>(), touchPos))
+            else if (hit.collider.CompareTag("Tower"))
             {
-                contextMenuUp.SetActive(false);
+                selectedTower = hit.collider.gameObject;
+                ShowContextMenuUp(touchPosition);
             }
-            if (contextMenuMaxUp.activeSelf && !RectTransformUtility.RectangleContainsScreenPoint(contextMenuMaxUp.GetComponent<RectTransform>(), touchPos))
+            else if (hit.collider.CompareTag("TowerMaxUp"))
             {
-                contextMenuMaxUp.SetActive(false);
+                selectedTower = hit.collider.gameObject;
+                ShowContextMenuMaxUp(touchPosition);
             }
-
-
         }
+    }
 
-        void ShowContextMenu(Vector2 screenPosition)
-        {
-            contextMenu.SetActive(true);
+    void CheckForMenuClose(Vector2 touchPosition)
+    {
+        if (contextMenu != null && contextMenu.activeSelf && !IsPositionInMenu(contextMenu, touchPosition))
+            contextMenu.SetActive(false);
 
-            // Конвертируем позицию для UI
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-            contextMenu.GetComponent<RectTransform>().localPosition = localPoint;
-        }
-        void ShowContextMenuUp(Vector2 screenPosition)
-        {
-            contextMenuUp.transform.GetChild(2).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 1.6f)).ToString();
-            contextMenuUp.transform.GetChild(3).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
-            contextMenuUp.SetActive(true);
+        if (contextMenuUp != null && contextMenuUp.activeSelf && !IsPositionInMenu(contextMenuUp, touchPosition))
+            contextMenuUp.SetActive(false);
 
-            // Конвертируем позицию для UI
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-            contextMenuUp.GetComponent<RectTransform>().localPosition = localPoint;
-        }
-        void ShowContextMenuMaxUp(Vector2 screenPosition)
-        {
-            contextMenuMaxUp.transform.GetChild(1).GetComponent<TMP_Text>().text = ((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 0.6f)).ToString();
-            contextMenuMaxUp.SetActive(true);
+        if (contextMenuMaxUp != null && contextMenuMaxUp.activeSelf && !IsPositionInMenu(contextMenuMaxUp, touchPosition))
+            contextMenuMaxUp.SetActive(false);
+    }
 
-            // Конвертируем позицию для UI
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-            contextMenuMaxUp.GetComponent<RectTransform>().localPosition = localPoint;
-        }
+    void ShowContextMenu(Vector2 screenPosition)
+    {
+        if (contextMenu == null || inputBlocked) return;
+
+        contextMenu.SetActive(true);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+        contextMenu.GetComponent<RectTransform>().localPosition = localPoint;
+    }
+
+    void ShowContextMenuUp(Vector2 screenPosition)
+    {
+        if (contextMenuUp == null || selectedTower == null || inputBlocked) return;
+
+        var tower = selectedTower.GetComponent<Tower>();
+        if (tower == null) return;
+
+        contextMenuUp.transform.GetChild(2).GetComponent<TMP_Text>().text = ((int)Mathf.Round(tower.cost * 1.6f)).ToString();
+        contextMenuUp.transform.GetChild(3).GetComponent<TMP_Text>().text = ((int)Mathf.Round(tower.cost * 0.6f)).ToString();
+        contextMenuUp.SetActive(true);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+        contextMenuUp.GetComponent<RectTransform>().localPosition = localPoint;
+    }
+
+    void ShowContextMenuMaxUp(Vector2 screenPosition)
+    {
+        if (contextMenuMaxUp == null || selectedTower == null || inputBlocked) return;
+
+        var tower = selectedTower.GetComponent<Tower>();
+        if (tower == null) return;
+
+        contextMenuMaxUp.transform.GetChild(1).GetComponent<TMP_Text>().text = ((int)Mathf.Round(tower.cost * 0.6f)).ToString();
+        contextMenuMaxUp.SetActive(true);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
+        contextMenuMaxUp.GetComponent<RectTransform>().localPosition = localPoint;
     }
 
     public void BuildTower(GameObject towerPrefab)
     {
-        if (towerPrefab != null && selectedBuildPoint != null && gameManager.money - towerPrefab.GetComponent<Tower>().cost >= 0)
-        {
-            gameManager.ChangeMoney(-towerPrefab.GetComponent<Tower>().cost);
+        if (inputBlocked || towerPrefab == null || selectedBuildPoint == null) return;
 
+        var tower = towerPrefab.GetComponent<Tower>();
+        if (tower == null) return;
+
+        if (GameManager.Instance.money - tower.cost >= 0)
+        {
+            GameManager.Instance.ChangeMoney(-tower.cost);
             Destroy(selectedBuildPoint);
             Instantiate(towerPrefab, selectedBuildPoint.transform.position, Quaternion.identity);
-
             contextMenu.SetActive(false);
         }
     }
 
     public void SellTower(GameObject BuildPoint)
     {
-        if (selectedTower != null)
-        {
-            gameManager.ChangeMoney((int)Mathf.Round(selectedTower.GetComponent<Tower>().cost*0.6f));
-            contextMenuUp.SetActive(false);
-            contextMenuMaxUp.SetActive(false);
-            Destroy(selectedTower);
-            Instantiate(BuildPoint, selectedTower.transform.position, Quaternion.identity);
-        }
+        if (inputBlocked || selectedTower == null || BuildPoint == null) return;
+
+        var tower = selectedTower.GetComponent<Tower>();
+        if (tower == null) return;
+
+        GameManager.Instance.ChangeMoney((int)Mathf.Round(tower.cost * 0.6f));
+        contextMenuUp.SetActive(false);
+        contextMenuMaxUp.SetActive(false);
+        Destroy(selectedTower);
+        Instantiate(BuildPoint, selectedTower.transform.position, Quaternion.identity);
     }
 
     public void TowerUp()
     {
-        if (gameManager.money - (int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 1.6f) >= 0)
+        if (inputBlocked || selectedTower == null) return;
+
+        var tower = selectedTower.GetComponent<Tower>();
+        if (tower == null || tower.nextTower == null) return;
+
+        int upgradeCost = (int)Mathf.Round(tower.cost * 1.6f);
+        if (GameManager.Instance.money - upgradeCost >= 0)
         {
-            gameManager.ChangeMoney(-(int)Mathf.Round(selectedTower.GetComponent<Tower>().cost * 1.6f));
+            GameManager.Instance.ChangeMoney(-upgradeCost);
             contextMenuUp.SetActive(false);
             Destroy(selectedTower);
-            Instantiate(selectedTower.GetComponent<Tower>().nextTower, selectedTower.transform.position, Quaternion.identity);
+            Instantiate(tower.nextTower, selectedTower.transform.position, Quaternion.identity);
         }
     }
 }
-

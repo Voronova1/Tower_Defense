@@ -1653,7 +1653,6 @@ MonoBehaviour:
   levelCompletePanel: {fileID: 1657692538}
   mainMenuScene: Test_terrain
   dialogueScene: IntroDialogue1_2
-  EnemyList: []
 --- !u!4 &452170003
 Transform:
   m_ObjectHideFlags: 0
@@ -2301,7 +2300,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 44.216766, y: -27}
+  m_AnchoredPosition: {x: 108, y: -27}
   m_SizeDelta: {x: 63.11969, y: 51.927887}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &724979052
@@ -2949,7 +2948,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38457412, y: -0.5848332, z: 0.3941405, w: 0.595589}
-  m_LocalPosition: {x: 24.8, y: 59, z: 12.29}
+  m_LocalPosition: {x: 21.5, y: 48.1, z: 12.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5279,7 +5278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132, y: -27}
+  m_AnchoredPosition: {x: 195.78317, y: -27}
   m_SizeDelta: {x: 101.80591, y: 51.927887}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1810073776

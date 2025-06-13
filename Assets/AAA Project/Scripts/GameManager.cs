@@ -2,12 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
+using System;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+    public static event Action<bool> OnGameEnded;
+
     public int playerHealth;
     public TMP_Text healthText;
-
     public int money;
     public TMP_Text moneyText;
 
@@ -19,16 +22,39 @@ public class GameManager : MonoBehaviour
     public string mainMenuScene = "MainMenu";
     public string dialogueScene = "DialogueScene";
 
+    [System.NonSerialized]
     public List<MovementMobs> EnemyList = new List<MovementMobs>();
+
     private WaveSpawner waveSpawner;
+    private bool isQuitting = false;
+    private bool gameEnded = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        InitializeUI();
+    }
 
     void Start()
+    {
+        waveSpawner = FindObjectOfType<WaveSpawner>();
+    }
+
+    void InitializeUI()
     {
         healthText.text = playerHealth.ToString();
         moneyText.text = money.ToString();
         levelFailedPanel.SetActive(false);
         levelCompletePanel.SetActive(false);
-        waveSpawner = FindObjectOfType<WaveSpawner>();
     }
 
     public void ChangeMoney(int count)
@@ -50,18 +76,27 @@ public class GameManager : MonoBehaviour
 
     public void AddEnemyOnList(MovementMobs enemy)
     {
-        EnemyList.Add(enemy);
+        if (enemy == null) return;
+        if (!EnemyList.Contains(enemy))
+        {
+            EnemyList.Add(enemy);
+        }
     }
 
-    public void RemoveEnemyFromList(MovementMobs enemy)
+    public void SafeRemoveEnemyFromList(MovementMobs enemy)
     {
-        EnemyList.Remove(enemy);
-        CheckLevelCompletion();
+        if (isQuitting || enemy == null) return;
+
+        if (EnemyList.Contains(enemy))
+        {
+            EnemyList.Remove(enemy);
+            CheckLevelCompletion();
+        }
     }
 
     private void CheckLevelCompletion()
     {
-        if (waveSpawner.AllWavesCompleted && EnemyList.Count == 0 && playerHealth > 0)
+        if (waveSpawner != null && waveSpawner.AllWavesCompleted && EnemyList.Count == 0 && playerHealth > 0)
         {
             LevelComplete();
         }
@@ -69,31 +104,44 @@ public class GameManager : MonoBehaviour
 
     private void LevelFailed()
     {
-        Time.timeScale = 0f;
-        levelFailedPanel.SetActive(true);
+        if (!gameEnded && levelFailedPanel != null)
+        {
+            gameEnded = true;
+            Time.timeScale = 0f;
+            levelFailedPanel.SetActive(true);
+            OnGameEnded?.Invoke(true);
+        }
     }
 
     private void LevelComplete()
     {
-        Time.timeScale = 0f;
-        levelCompletePanel.SetActive(true);
+        if (!gameEnded && levelCompletePanel != null)
+        {
+            gameEnded = true;
+            Time.timeScale = 0f;
+            levelCompletePanel.SetActive(true);
+            OnGameEnded?.Invoke(true);
+        }
     }
 
     public void RestartLevel()
     {
         Time.timeScale = 1f;
+        gameEnded = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
+        gameEnded = false;
         SceneManager.LoadScene(mainMenuScene);
     }
 
     public void ContinueToDialogue()
     {
         Time.timeScale = 1f;
+        gameEnded = false;
         SceneManager.LoadScene(dialogueScene);
     }
 }

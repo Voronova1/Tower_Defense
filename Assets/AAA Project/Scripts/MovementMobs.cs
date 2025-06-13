@@ -11,28 +11,28 @@ public class MovementMobs : MonoBehaviour
     private float triggerDistance = 0.5f;
     private int rand;
     private GameManager gameManager;
-
-    private MobSpawner spawner;
     public int health = 10;
+    public int loot;
 
-    public int loot; 
+    public float rotationSpeed = 10f;
+    private bool isBeingDestroyed = false;
+
     void Start()
     {
-        // Автоматически находим GameManager
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = GameManager.Instance;
+        if (gameManager == null)
+        {
+            Debug.LogError("GameManager не найден!");
+            enabled = false;
+            return;
+        }
 
         gameManager.AddEnemyOnList(this);
 
         wayPoints = GameObject.FindGameObjectsWithTag("MovingPoint").OrderBy(go => go.name).ToArray();
         wayPoints2 = GameObject.FindGameObjectsWithTag("MovingPoint2").OrderBy(go => go.name).ToArray();
 
-        if (wayPoints.Length == 0)
-        {
-            Debug.LogError("Нет точек пути!");
-            enabled = false;
-            return;
-        }
-        if (wayPoints2.Length == 0)
+        if (wayPoints.Length == 0 || wayPoints2.Length == 0)
         {
             Debug.LogError("Нет точек пути!");
             enabled = false;
@@ -40,90 +40,90 @@ public class MovementMobs : MonoBehaviour
         }
 
         rand = Random.Range(0, 2);
-        if (rand == 0)
-        {
-            target = wayPoints[currentWayPoint].transform.position;
-        }
-        else
-        {
-            target = wayPoints2[currentWayPoint].transform.position;
-        }
-
+        UpdateTarget();
     }
-
-    public void TakeDamage(int damage)
-    {
-        health -= damage;
-        if (health <= 0)
-        {
-            gameManager.ChangeMoney(loot);
-            Destroy(gameObject);
-            
-        }
-    }
-
-    private void OnDestroy()
-    {   
-        gameManager.RemoveEnemyFromList(this);
-        int enemiesLeft = GameObject.FindGameObjectsWithTag("Enemy").Length;
-        //if (enemiesLeft == 0)
-        //{
-        //    spawner.SpawnMob();
-        //}
-    }
-
 
     void Update()
     {
-        // Движение к цели
+        if (isBeingDestroyed) return;
+
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
 
-        // Дополнительная проверка расстояния
+        if (target != transform.position)
+        {
+            Vector3 direction = (target - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+        }
+
         if (Vector3.Distance(transform.position, target) < triggerDistance)
         {
             SwitchToNextWaypoint();
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void TakeDamage(int damage)
     {
-        // Проверяем, что это именно текущая целевая точка
-        if (other.CompareTag("MovingPoint") || other.CompareTag("MovingPoint")  && other.gameObject == wayPoints[currentWayPoint])
+        if (isBeingDestroyed || gameManager == null) return;
+
+        health -= damage;
+        if (health <= 0)
         {
-            SwitchToNextWaypoint();
+            gameManager.ChangeMoney(loot);
+            DestroyMob();
+        }
+    }
+
+    private void DestroyMob()
+    {
+        if (isBeingDestroyed) return;
+
+        isBeingDestroyed = true;
+        if (gameManager != null)
+        {
+            gameManager.SafeRemoveEnemyFromList(this);
+        }
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (!isBeingDestroyed && gameManager != null)
+        {
+            gameManager.SafeRemoveEnemyFromList(this);
         }
     }
 
     private void SwitchToNextWaypoint()
     {
-        // Сначала проверяем, не последняя ли это точка
-        if (currentWayPoint >= wayPoints.Length - 1)
+        if (isBeingDestroyed) return;
+
+        if (currentWayPoint >= (rand == 0 ? wayPoints.Length : wayPoints2.Length) - 1)
         {
-            
             if (gameManager != null)
             {
-                gameManager.ChangeHealth(1); // Наносим урон игроку
+                gameManager.ChangeHealth(1);
             }
-            else
-            {
-                Debug.LogWarning("GameManager не назначен!");
-            }
-            
-            Destroy(gameObject);
+            DestroyMob();
             return;
         }
 
-        // Переключаемся на следующую точку
         currentWayPoint++;
-        if (rand == 0)
+        UpdateTarget();
+    }
+
+    private void UpdateTarget()
+    {
+        if (rand == 0 && wayPoints.Length > currentWayPoint)
         {
             target = wayPoints[currentWayPoint].transform.position;
         }
-        else
+        else if (wayPoints2.Length > currentWayPoint)
         {
             target = wayPoints2[currentWayPoint].transform.position;
         }
-        
     }
-
 }
