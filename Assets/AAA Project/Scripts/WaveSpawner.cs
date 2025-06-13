@@ -6,18 +6,19 @@ public class WaveSpawner : MonoBehaviour
     [System.Serializable]
     public class Wave
     {
-        public GameObject mobPrefab; // Префаб моба
-        public int mobCount;         // Количество мобов в волне
-        public float spawnRate;      // Интервал между спавном (1/сек)
+        public GameObject mobPrefab;
+        public int mobCount;
+        public float spawnRate;
     }
 
-    public Wave[] waves;            // Массив волн
-    public Transform[] spawnPoints; // Точки спавна
-    public float timeBetweenWaves = 5f; // Пауза между волнами
-    public bool loopWaves = false;   // Зацикливать волны
+    public Wave[] waves;
+    public Transform[] spawnPoints;
+    public float timeBetweenWaves = 5f;
+    public bool loopWaves = false;
 
     private int currentWaveIndex = 0;
     private bool isSpawning = false;
+    public bool AllWavesCompleted { get; private set; } = false;
 
     void Start()
     {
@@ -26,18 +27,26 @@ public class WaveSpawner : MonoBehaviour
 
     IEnumerator WaveSpawnLoop()
     {
-        while (true)
+        while (currentWaveIndex < waves.Length)
         {
-            // Если все волны пройдены и не зациклены - выходим
-            if (currentWaveIndex >= waves.Length && !loopWaves) yield break;
+            Wave currentWave = waves[currentWaveIndex];
+            yield return StartCoroutine(SpawnWave(currentWave));
 
-            // Запускаем волну
-            yield return StartCoroutine(SpawnWave(waves[currentWaveIndex % waves.Length]));
-
-            // Пауза между волнами
-            yield return new WaitForSeconds(timeBetweenWaves);
+            if (currentWaveIndex < waves.Length - 1)
+            {
+                yield return new WaitForSeconds(timeBetweenWaves);
+            }
 
             currentWaveIndex++;
+        }
+
+        AllWavesCompleted = true;
+
+        if (loopWaves)
+        {
+            currentWaveIndex = 0;
+            AllWavesCompleted = false;
+            StartCoroutine(WaveSpawnLoop());
         }
     }
 
@@ -57,14 +66,7 @@ public class WaveSpawner : MonoBehaviour
     void SpawnMob(GameObject mobPrefab)
     {
         if (spawnPoints.Length == 0) return;
-
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         Instantiate(mobPrefab, spawnPoint.position, spawnPoint.rotation);
-    }
-
-    // Вызывается при смерти моба (если нужно отслеживать)
-    public void OnMobDeath()
-    {
-        // Логика при смерти моба
     }
 }

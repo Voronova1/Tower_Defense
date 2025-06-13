@@ -6,11 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/AAA Project/Scenes/IntroDialogue.unity
+    path: Assets/AAA Project/Scenes/Level1/IntroDialogue1_1.unity
     guid: faba63cc3a0f100458a653cedafdf9d6
   - enabled: 1
-    path: Assets/AAA Project/Scenes/level_1.unity
+    path: Assets/AAA Project/Scenes/Test_terrain.unity
+    guid: 29af52209bda87d42a8f0a8dc7cf0d4b
+  - enabled: 1
+    path: Assets/AAA Project/Scenes/Level1/level_1.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/AAA Project/Scenes/Level1/IntroDialogue1_2.unity
+    guid: a551d866a5d541b438406e3b763e822c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0
