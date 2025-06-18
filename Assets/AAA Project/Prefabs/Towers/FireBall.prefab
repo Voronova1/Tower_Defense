@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6395719451530782151}
   - component: {fileID: 2826098634200552700}
   m_Layer: 0
-  m_Name: FireBall 1
+  m_Name: FireBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e17421d31ed9cf64480dfee339753469, type: 2}
+  - {fileID: 2100000, guid: 1771da93430d8d34d86f5e1278af081e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
