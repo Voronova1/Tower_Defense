@@ -17,6 +17,11 @@ public class MovementMobs : MonoBehaviour
     public float rotationSpeed = 10f;
     private bool isBeingDestroyed = false;
 
+    // Добавленные поля для избегания столкновений
+    public float separationDistance = 1.5f;
+    public float separationForce = 2f;
+    private Collider[] nearbyColliders = new Collider[10];
+
     void Start()
     {
         gameManager = GameManager.Instance;
@@ -39,13 +44,21 @@ public class MovementMobs : MonoBehaviour
             return;
         }
 
-        rand = Random.Range(0, 2);
+        // Улучшенный выбор пути
+        rand = Random.value > 0.5f ? 1 : 0;
+
+        // Добавленная вариативность скорости
+        speed = Random.Range(speed * 0.8f, speed * 1f);
+
         UpdateTarget();
     }
 
     void Update()
     {
         if (isBeingDestroyed) return;
+
+        // Добавленное избегание других мобов
+        AvoidOtherMobs();
 
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
 
@@ -62,6 +75,33 @@ public class MovementMobs : MonoBehaviour
         if (Vector3.Distance(transform.position, target) < triggerDistance)
         {
             SwitchToNextWaypoint();
+        }
+    }
+
+    // Метод для избегания столкновений
+    private void AvoidOtherMobs()
+    {
+        int count = Physics.OverlapSphereNonAlloc(transform.position, separationDistance, nearbyColliders);
+
+        Vector3 separationDirection = Vector3.zero;
+        int mobsCounted = 0;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (nearbyColliders[i] != null &&
+                nearbyColliders[i].gameObject != gameObject &&
+                nearbyColliders[i].CompareTag("Enemy"))
+            {
+                separationDirection += transform.position - nearbyColliders[i].transform.position;
+                mobsCounted++;
+            }
+        }
+
+        if (mobsCounted > 0)
+        {
+            separationDirection /= mobsCounted;
+            separationDirection = separationDirection.normalized * separationForce;
+            transform.position += separationDirection * Time.deltaTime;
         }
     }
 

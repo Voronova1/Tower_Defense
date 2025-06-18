@@ -2936,17 +2936,17 @@ MonoBehaviour:
   waves:
   - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
     mobCount: 6
-    spawnRate: 1
+    spawnRate: 0.5
   - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
     mobCount: 10
-    spawnRate: 2
+    spawnRate: 0.7
   - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
     mobCount: 7
-    spawnRate: 3
+    spawnRate: 1
   spawnPoints:
   - {fileID: 1526412624}
   - {fileID: 706575679}
-  timeBetweenWaves: 10
+  timeBetweenWaves: 15
   loopWaves: 0
 --- !u!1001 &758112903
 PrefabInstance:
