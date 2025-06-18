@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8926270134540460293}
   m_Layer: 0
-  m_Name: Tower 3.3
+  m_Name: Tower 2.2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,15 +47,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4458899494531338, guid: ee88617da51e3e8479a812f9d58a94be, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.10072482
+      value: 0.08648031
       objectReference: {fileID: 0}
     - target: {fileID: 4458899494531338, guid: ee88617da51e3e8479a812f9d58a94be, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.10072482
+      value: 0.08648031
       objectReference: {fileID: 0}
     - target: {fileID: 4458899494531338, guid: ee88617da51e3e8479a812f9d58a94be, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.10072482
+      value: 0.08648031
       objectReference: {fileID: 0}
     - target: {fileID: 4458899494531338, guid: ee88617da51e3e8479a812f9d58a94be, type: 3}
       propertyPath: m_LocalPosition.x
@@ -162,6 +162,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 100004, guid: 8f68cd2fabb4f61468b0be7ae7c14a09, type: 3}
+    - {fileID: 100000, guid: 8f68cd2fabb4f61468b0be7ae7c14a09, type: 3}
+    - {fileID: 100002, guid: 8f68cd2fabb4f61468b0be7ae7c14a09, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f68cd2fabb4f61468b0be7ae7c14a09, type: 3}
