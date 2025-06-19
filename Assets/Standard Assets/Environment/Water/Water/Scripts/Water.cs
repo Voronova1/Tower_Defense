@@ -37,113 +37,32 @@ namespace UnityStandardAssets.Water
         // camera. We render reflections / refractions and do other updates here.
         // Because the script executes in edit mode, reflections for the scene view
         // camera will just work!
-        public void OnWillRenderObject()
+
+        public void PreCullUpdate()
         {
-            if (!enabled || !GetComponent<Renderer>() || !GetComponent<Renderer>().sharedMaterial ||
-                !GetComponent<Renderer>().enabled)
-            {
-                return;
-            }
+            // Обновление параметров воды
+            if (!GetComponent<Renderer>()) return;
 
-            Camera cam = Camera.current;
-            if (!cam)
-            {
-                return;
-            }
+            Material mat = GetComponent<Renderer>().sharedMaterial;
+            if (!mat) return;
 
-            // Safeguard from recursive water reflections.
-            if (s_InsideWater)
-            {
-                return;
-            }
-            s_InsideWater = true;
+            // Расчет волн и параметров материала
+            Vector4 waveSpeed = mat.GetVector("WaveSpeed");
+            float waveScale = mat.GetFloat("_WaveScale");
+            Vector4 waveScale4 = new Vector4(waveScale, waveScale, waveScale * 0.4f, waveScale * 0.45f);
 
-            // Actual water rendering mode depends on both the current setting AND
-            // the hardware support. There's no point in rendering refraction textures
-            // if they won't be visible in the end.
-            m_HardwareWaterSupport = FindHardwareWaterSupport();
-            WaterMode mode = GetWaterMode();
+            double t = Time.timeSinceLevelLoad / 20.0;
+            Vector4 offsetClamped = new Vector4(
+                (float)Math.IEEERemainder(waveSpeed.x * waveScale4.x * t, 1.0),
+                (float)Math.IEEERemainder(waveSpeed.y * waveScale4.y * t, 1.0),
+                (float)Math.IEEERemainder(waveSpeed.z * waveScale4.z * t, 1.0),
+                (float)Math.IEEERemainder(waveSpeed.w * waveScale4.w * t, 1.0));
 
-            Camera reflectionCamera, refractionCamera;
-            CreateWaterObjects(cam, out reflectionCamera, out refractionCamera);
+            mat.SetVector("_WaveOffset", offsetClamped);
+            mat.SetVector("_WaveScale4", waveScale4);
 
-            // find out the reflection plane: position and normal in world space
-            Vector3 pos = transform.position;
-            Vector3 normal = transform.up;
-
-            // Optionally disable pixel lights for reflection/refraction
-            int oldPixelLightCount = QualitySettings.pixelLightCount;
-            if (disablePixelLights)
-            {
-                QualitySettings.pixelLightCount = 0;
-            }
-
-            UpdateCameraModes(cam, reflectionCamera);
-            UpdateCameraModes(cam, refractionCamera);
-
-            // Render reflection if needed
-            if (mode >= WaterMode.Reflective)
-            {
-                // Reflect camera around reflection plane
-                float d = -Vector3.Dot(normal, pos) - clipPlaneOffset;
-                Vector4 reflectionPlane = new Vector4(normal.x, normal.y, normal.z, d);
-
-                Matrix4x4 reflection = Matrix4x4.zero;
-                CalculateReflectionMatrix(ref reflection, reflectionPlane);
-                Vector3 oldpos = cam.transform.position;
-                Vector3 newpos = reflection.MultiplyPoint(oldpos);
-                reflectionCamera.worldToCameraMatrix = cam.worldToCameraMatrix * reflection;
-
-                // Setup oblique projection matrix so that near plane is our reflection
-                // plane. This way we clip everything below/above it for free.
-                Vector4 clipPlane = CameraSpacePlane(reflectionCamera, pos, normal, 1.0f);
-                reflectionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
-
-				// Set custom culling matrix from the current camera
-				reflectionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
-
-				reflectionCamera.cullingMask = ~(1 << 4) & reflectLayers.value; // never render water layer
-                reflectionCamera.targetTexture = m_ReflectionTexture;
-                bool oldCulling = GL.invertCulling;
-                GL.invertCulling = !oldCulling;
-                reflectionCamera.transform.position = newpos;
-                Vector3 euler = cam.transform.eulerAngles;
-                reflectionCamera.transform.eulerAngles = new Vector3(-euler.x, euler.y, euler.z);
-                reflectionCamera.Render();
-                reflectionCamera.transform.position = oldpos;
-                GL.invertCulling = oldCulling;
-                GetComponent<Renderer>().sharedMaterial.SetTexture("_ReflectionTex", m_ReflectionTexture);
-            }
-
-            // Render refraction
-            if (mode >= WaterMode.Refractive)
-            {
-                refractionCamera.worldToCameraMatrix = cam.worldToCameraMatrix;
-
-                // Setup oblique projection matrix so that near plane is our reflection
-                // plane. This way we clip everything below/above it for free.
-                Vector4 clipPlane = CameraSpacePlane(refractionCamera, pos, normal, -1.0f);
-                refractionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
-
-				// Set custom culling matrix from the current camera
-				refractionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
-
-				refractionCamera.cullingMask = ~(1 << 4) & refractLayers.value; // never render water layer
-                refractionCamera.targetTexture = m_RefractionTexture;
-                refractionCamera.transform.position = cam.transform.position;
-                refractionCamera.transform.rotation = cam.transform.rotation;
-                refractionCamera.Render();
-                GetComponent<Renderer>().sharedMaterial.SetTexture("_RefractionTex", m_RefractionTexture);
-            }
-
-            // Restore pixel light count
-            if (disablePixelLights)
-            {
-                QualitySettings.pixelLightCount = oldPixelLightCount;
-            }
-
-            // Setup shader keywords based on water mode
-            switch (mode)
+            // Настройка шейдерных ключей
+            switch (GetWaterMode())
             {
                 case WaterMode.Simple:
                     Shader.EnableKeyword("WATER_SIMPLE");
@@ -161,9 +80,84 @@ namespace UnityStandardAssets.Water
                     Shader.EnableKeyword("WATER_REFRACTIVE");
                     break;
             }
+        }
+
+        public void RenderWaterEffects(Camera cam)
+        {
+            if (s_InsideWater) return;
+            s_InsideWater = true;
+
+            // Вся оригинальная логика рендеринга из OnWillRenderObject
+            WaterMode mode = GetWaterMode();
+            Camera reflectionCamera, refractionCamera;
+            CreateWaterObjects(cam, out reflectionCamera, out refractionCamera);
+
+            Vector3 pos = transform.position;
+            Vector3 normal = transform.up;
+
+            int oldPixelLightCount = QualitySettings.pixelLightCount;
+            if (disablePixelLights)
+                QualitySettings.pixelLightCount = 0;
+
+            UpdateCameraModes(cam, reflectionCamera);
+            UpdateCameraModes(cam, refractionCamera);
+
+            if (mode >= WaterMode.Reflective)
+            {
+                // Оригинальный код для отражений
+                float d = -Vector3.Dot(normal, pos) - clipPlaneOffset;
+                Vector4 reflectionPlane = new Vector4(normal.x, normal.y, normal.z, d);
+
+                Matrix4x4 reflection = Matrix4x4.zero;
+                CalculateReflectionMatrix(ref reflection, reflectionPlane);
+                Vector3 oldpos = cam.transform.position;
+                Vector3 newpos = reflection.MultiplyPoint(oldpos);
+                reflectionCamera.worldToCameraMatrix = cam.worldToCameraMatrix * reflection;
+
+                Vector4 clipPlane = CameraSpacePlane(reflectionCamera, pos, normal, 1.0f);
+                reflectionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
+
+                reflectionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
+                reflectionCamera.cullingMask = ~(1 << 4) & reflectLayers.value;
+                reflectionCamera.targetTexture = m_ReflectionTexture;
+
+                bool oldCulling = GL.invertCulling;
+                GL.invertCulling = !oldCulling;
+                reflectionCamera.transform.position = newpos;
+                Vector3 euler = cam.transform.eulerAngles;
+                reflectionCamera.transform.eulerAngles = new Vector3(-euler.x, euler.y, euler.z);
+                reflectionCamera.Render();
+                reflectionCamera.transform.position = oldpos;
+                GL.invertCulling = oldCulling;
+
+                GetComponent<Renderer>().sharedMaterial.SetTexture("_ReflectionTex", m_ReflectionTexture);
+            }
+
+            if (mode >= WaterMode.Refractive)
+            {
+                // Оригинальный код для преломлений
+                refractionCamera.worldToCameraMatrix = cam.worldToCameraMatrix;
+
+                Vector4 clipPlane = CameraSpacePlane(refractionCamera, pos, normal, -1.0f);
+                refractionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
+
+                refractionCamera.cullingMatrix = cam.projectionMatrix * cam.worldToCameraMatrix;
+                refractionCamera.cullingMask = ~(1 << 4) & refractLayers.value;
+                refractionCamera.targetTexture = m_RefractionTexture;
+                refractionCamera.transform.position = cam.transform.position;
+                refractionCamera.transform.rotation = cam.transform.rotation;
+                refractionCamera.Render();
+
+                GetComponent<Renderer>().sharedMaterial.SetTexture("_RefractionTex", m_RefractionTexture);
+            }
+
+            if (disablePixelLights)
+                QualitySettings.pixelLightCount = oldPixelLightCount;
 
             s_InsideWater = false;
         }
+
+         
 
 
         // Cleanup all the objects we possibly have created
