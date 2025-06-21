@@ -1269,7 +1269,7 @@ GameObject:
   - component: {fileID: 1413030711302328930}
   m_Layer: 0
   m_Name: Tower 2.2
-  m_TagString: TowerMaxUp
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1379,9 +1379,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9b0ee47597f6a641869de7e3e7f4b10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  towerType: 0
+  maxTargets: 3
   attackRadius: 50
-  startTimeBtwAttack: 1
-  bulletPrefab: {fileID: 6921824203374264943, guid: 503ff8e45a95d3c428b5c4a191412fa3, type: 3}
+  startTimeBtwAttack: 4
+  bulletPrefab: {fileID: 6921824203374264943, guid: 3409ef33e6848f140990fcc9e23f339e, type: 3}
   shootPoint: {fileID: 2042167716502792350}
   nextTower: {fileID: 9067326546978148165, guid: c8fe6da64c227e049afe8cf04709b2d6, type: 3}
-  cost: 256
+  cost: 208
+  desertSpeedMultiplier: 0.75
+  desertFireRateMultiplier: 1.5
+  oasisLayer:
+    serializedVersion: 2
+    m_Bits: 16
+  oasisCheckRadius: 15

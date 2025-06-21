@@ -4,18 +4,26 @@ using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+
+[System.Serializable]
+public class DialogueLine
+{
+    public enum SlideType { TextAndCharacter, ImageOnly }
+
+    public SlideType slideType = SlideType.TextAndCharacter;
+
+    [TextArea(3, 5)]
+    public string text;
+    public Sprite characterSprite;
+    public Sprite fullscreenImage; // Для слайдов типа ImageOnly
+    public AudioClip soundEffect;
+}
+
 public class DialogueManager : MonoBehaviour
 {
-    [System.Serializable]
-    public class DialogueLine
-    {
-        [TextArea(3, 5)]
-        public string text;
-        public Sprite characterSprite;
-        public AudioClip soundEffect; // Звук для конкретной реплики
-    }
-
+    
     public DialogueLine[] dialogueLines;
+    public GameObject textPanel;
     public TMP_Text dialogueText;
     public Image characterImage;
     public GameObject tapPrompt;
@@ -29,6 +37,8 @@ public class DialogueManager : MonoBehaviour
 
     private PlayerInput playerInput;
     private InputAction touchPressAction;
+
+    public Image fullscreenImage; // Добавьте это в UI (новый Image компонент)
 
     void Start()
     {
@@ -84,24 +94,75 @@ public class DialogueManager : MonoBehaviour
 
     void ShowLine(int index)
     {
-        if (index >= dialogueLines.Length) return;
+        // Базовые проверки
+        if (dialogueLines == null || index >= dialogueLines.Length || index < 0)
+        {
+            Debug.LogError("Invalid dialogue line configuration");
+            return;
+        }
 
-        currentLine = index;
-        dialogueText.text = dialogueLines[index].text;
-        characterImage.sprite = dialogueLines[index].characterSprite;
+        var line = dialogueLines[index];
+        if (line == null)
+        {
+            Debug.LogError($"Dialogue line at index {index} is null");
+            return;
+        }
 
-        // Воспроизведение звука для текущей реплики
-        PlaySlideSound(dialogueLines[index].soundEffect);
+        // Сначала деактивируем все элементы
+        if (textPanel != null) textPanel.SetActive(false);
+        if (characterImage != null) characterImage.gameObject.SetActive(false);
+        if (fullscreenImage != null) fullscreenImage.gameObject.SetActive(false);
+
+        // Обрабатываем в зависимости от типа слайда
+        switch (line.slideType)
+        {
+            case DialogueLine.SlideType.TextAndCharacter:
+                // Активируем текстовую панель
+                if (textPanel != null) textPanel.SetActive(true);
+
+                if (dialogueText != null)
+                {
+                    dialogueText.text = line.text ?? "";
+                    dialogueText.gameObject.SetActive(true);
+                    FadeInElement(dialogueText);
+                }
+
+                if (characterImage != null)
+                {
+                    characterImage.sprite = line.characterSprite;
+                    characterImage.gameObject.SetActive(line.characterSprite != null);
+                    if (line.characterSprite != null) FadeInElement(characterImage);
+                }
+                break;
+
+            case DialogueLine.SlideType.ImageOnly:
+                // Текстовая панель остаётся выключенной
+                if (fullscreenImage != null)
+                {
+                    fullscreenImage.sprite = line.fullscreenImage;
+                    fullscreenImage.gameObject.SetActive(line.fullscreenImage != null);
+                    if (line.fullscreenImage != null) FadeInElement(fullscreenImage);
+                }
+                break;
+        }
+
+        // Воспроизведение звука (если есть источник и клип)
+        if (audioSource != null && line.soundEffect != null)
+        {
+            audioSource.PlayOneShot(line.soundEffect);
+        }
 
         timeSinceLastTap = 0f;
         if (promptActive) HideTapPrompt();
+    }
 
-        CanvasGroup cg = dialogueText.GetComponent<CanvasGroup>();
-        if (cg != null)
-        {
-            cg.alpha = 0;
-            LeanTween.alphaCanvas(cg, 1f, 0.3f);
-        }
+    void FadeInElement(Graphic element)
+    {
+        CanvasGroup cg = element.GetComponent<CanvasGroup>();
+        if (cg == null) cg = element.gameObject.AddComponent<CanvasGroup>();
+
+        cg.alpha = 0;
+        LeanTween.alphaCanvas(cg, 1f, 0.3f);
     }
 
     void PlaySlideSound(AudioClip clip)
@@ -149,7 +210,8 @@ public class DialogueManager : MonoBehaviour
 
         if (currentLine < dialogueLines.Length - 1)
         {
-            ShowLine(currentLine + 1);
+            currentLine++; 
+            ShowLine(currentLine);
         }
         else
         {

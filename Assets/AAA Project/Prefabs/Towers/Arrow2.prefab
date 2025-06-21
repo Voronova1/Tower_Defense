@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4536553017887527493}
   - component: {fileID: 5758441798560714984}
   m_Layer: 0
-  m_Name: Arrow
+  m_Name: Arrow2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c5ed3f17ebc424f9b84a68ee8639b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 40
+  speed: 35
   damage: 3
   whatIsSolid:
     serializedVersion: 2

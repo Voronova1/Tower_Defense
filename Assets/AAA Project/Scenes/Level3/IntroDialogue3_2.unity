@@ -355,7 +355,7 @@ PrefabInstance:
     - target: {fileID: 4971273856276636419, guid: 91671a4ef3d39df4ea933e8d8ec440e0, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: c776b9b575511924a9b6373f0fecea28, type: 3}
+      objectReference: {fileID: 21300000, guid: 729b788d642dcb3489c9e5966afa177b, type: 3}
     - target: {fileID: 6673116550285812397, guid: 91671a4ef3d39df4ea933e8d8ec440e0, type: 3}
       propertyPath: m_fontSize
       value: 34
@@ -410,7 +410,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3339211480289969028, guid: 91671a4ef3d39df4ea933e8d8ec440e0, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1757314934}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91671a4ef3d39df4ea933e8d8ec440e0, type: 3}
 --- !u!1 &403677403 stripped
@@ -434,6 +437,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &602441189 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4646573700018543620, guid: 91671a4ef3d39df4ea933e8d8ec440e0, type: 3}
+  m_PrefabInstance: {fileID: 403677402}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &682966383
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,86 +663,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - slideType: 0
-    text: "\u042D\u0439, \u043F\u0440\u0438\u0432\u0435\u0442, \u043C\u0435\u043D\u044F
-      \u0437\u043E\u0432\u0443\u0442 \u042D\u043B\u043B\u0430! \n\u0422\u044B \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0439
-      \u0421\u0442\u0440\u0430\u0436\u043D\u0438\u043A \u0412\u0440\u0430\u0442. "
+    text: "\u0424\u0443\u0445... \u041C\u044B \u0441\u043F\u0440\u0430\u0432\u0438\u043B\u0438\u0441\u044C! "
     characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
     fullscreenImage: {fileID: 0}
     soundEffect: {fileID: 0}
   - slideType: 0
-    text: "\u041A\u043E\u0433\u0434\u0430-\u0442\u043E \u043E\u043D\u0438 \u0441\u043B\u0435\u0434\u0438\u043B\u0438
-      \u0437\u0430 \u043F\u043E\u0440\u0442\u0430\u043B\u043E\u043C, \u043D\u043E,
-      \u043F\u043E\u0441\u043B\u0435 \u0442\u043E\u0433\u043E \u043A\u0430\u043A
-      \u0441\u0443\u043C\u0435\u043B\u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u044C
-      \u0435\u0433\u043E, \u043F\u043E\u0442\u0435\u0440\u044F\u043B\u0438 \u0441\u0432\u043E\u0438
-      \u043D\u0430\u0432\u044B\u043A\u0438 \u0438 \u0438\u0441\u0447\u0435\u0437\u043B\u0438,
-      \u0442\u0430\u043A \u043A\u0430\u043A \u0437\u0430\u0449\u0438\u0449\u0430\u0442\u044C
-      \u043D\u0430\u0441 \u0431\u044B\u043B\u043E \u0431\u043E\u043B\u044C\u0448\u0435
-      \u043D\u0435 \u043E\u0442\u0447\u0435\u0433\u043E..."
+    text: "\u0422\u044B \u043E\u0442\u043B\u0438\u0447\u043D\u043E \u043E\u0441\u0432\u043E\u0438\u043B
+      \u043D\u043E\u0432\u0443\u044E \u0431\u0430\u0448\u043D\u044E - \u0432\u0438\u0434\u043D\u043E,
+      \u0447\u0442\u043E \u043F\u0440\u0438\u0440\u043E\u0434\u043D\u0430\u044F \u0441\u043C\u0435\u043A\u0430\u043B\u043A\u0430
+      \u0443 \u0421\u0442\u0440\u0430\u0436\u043D\u0438\u043A\u043E\u0432 \u0432
+      \u043A\u0440\u043E\u0432\u0438!"
     characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
     fullscreenImage: {fileID: 0}
     soundEffect: {fileID: 0}
   - slideType: 0
-    text: "\u041D\u0438\u043A\u0442\u043E \u0438 \u043D\u0435 \u0434\u0443\u043C\u0430\u043B,
-      \u0447\u0442\u043E \u043F\u043E\u0440\u0442\u0430\u043B \u0441\u043D\u043E\u0432\u0430
-      \u043E\u0442\u043A\u0440\u043E\u0435\u0442\u0441\u044F, \u043D\u043E \u044D\u0442\u043E
-      \u0441\u043B\u0443\u0447\u0438\u043B\u043E\u0441\u044C.\r"
+    text: "\u0413\u043E\u0440\u043D\u0430\u044F \u0434\u0435\u0440\u0435\u0432\u043D\u044F
+      \u0441\u043E\u0432\u0441\u0435\u043C \u0431\u043B\u0438\u0437\u043A\u043E,
+      \u0438\u0434\u0451\u043C \u0441\u043A\u043E\u0440\u0435\u0435!"
     characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
     fullscreenImage: {fileID: 0}
     soundEffect: {fileID: 0}
-  - slideType: 0
-    text: "\u042F \u043C\u043D\u043E\u0433\u043E \u0438\u0437\u0443\u0447\u0430\u043B\u0430
-      \u0441\u0442\u0430\u0440\u044B\u0435 \u043A\u043D\u0438\u0433\u0438 \u043E
-      \u0421\u0442\u0440\u0430\u0436\u043D\u0438\u043A\u0430\u0445 \u0438 \u043C\u043E\u0433\u0443
-      \u043F\u043E\u043C\u043E\u0447\u044C \u0442\u0435\u0431\u0435 \u0432 \u0431\u043E\u0440\u044C\u0431\u0435
-      \u0441 \u0442\u0435\u043D\u0435\u0432\u044B\u043C\u0438 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F\u043C\u0438.\r\n"
-    characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 0}
-  - slideType: 0
-    text: "\u0414\u043B\u044F \u0437\u0430\u043A\u0440\u044B\u0442\u0438\u044F \u043F\u043E\u0440\u0442\u0430\u043B\u0430
-      \u043D\u0430\u043C \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E
-      \u043D\u0430\u0439\u0442\u0438 3 \u0444\u0440\u0430\u0433\u043C\u0435\u043D\u0442\u0430
-      \u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u044F.\r\n\r\n"
-    characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 0}
-  - slideType: 0
-    text: "\u041D\u043E \u043F\u043E\u043A\u0430 \u0434\u0430\u0432\u0430\u0439 \u043E\u0442\u0440\u0430\u0437\u0438\u043C
-      \u043F\u0435\u0440\u0432\u0443\u044E \u0430\u0442\u0430\u043A\u0443 \u0422\u0435\u043D\u0435\u0432\u043E\u0440\u043D\u043E\u0432,
-      \u043E\u043D\u0438 \u0443\u0436\u0435 \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u044E\u0442\u0441\u044F. "
-    characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 0}
-  - slideType: 0
-    text: "\u042F \u0441\u043E\u0437\u0434\u0430\u043B\u0430 \u043F\u0435\u0440\u0432\u0443\u044E
-      \u0431\u0430\u0448\u043D\u044E \u043F\u043E \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u043C
-      \u043C\u043D\u043E\u0439 \u0438\u043D\u0441\u0442\u0440\u0443\u043A\u0446\u0438\u044F\u043C,
-      \u043D\u043E \u043D\u0435 \u043C\u043E\u0433\u0443 \u043F\u0440\u043E\u0442\u0435\u0441\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C
-      \u0435\u0451 \u0431\u0435\u0437 \u0442\u0432\u043E\u0435\u0439 \u0441\u0438\u043B\u044B.\r\n"
-    characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 0}
-  - slideType: 0
-    text: "\u0420\u0440\u0440..."
-    characterSprite: {fileID: 21300000, guid: 0a7433ad9e72a304096f94b2aabb6979, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 8300000, guid: e786b88a8f9c6b74ca40c56d34b81370, type: 3}
-  - slideType: 0
-    text: "\u041D\u043E \u043F\u043E\u0445\u043E\u0436\u0435 \u0442\u0435\u0431\u0435
-      \u043F\u0440\u0438\u0434\u0451\u0442\u0441\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u044F\u0442\u044C
-      \u0435\u0451 \u0441\u0440\u0430\u0437\u0443 \u043D\u0430 \u043F\u0440\u0430\u043A\u0442\u0438\u043A\u0435.\r"
-    characterSprite: {fileID: 21300000, guid: 25de4faf97bfe8b48858623e9aa5bd95, type: 3}
-    fullscreenImage: {fileID: 0}
-    soundEffect: {fileID: 0}
-  textPanel: {fileID: 0}
+  textPanel: {fileID: 602441189}
   dialogueText: {fileID: 100580649}
   characterImage: {fileID: 403677405}
   tapPrompt: {fileID: 403677403}
-  nextSceneName: level_1
+  nextSceneName: Test_terrain
   audioSource: {fileID: 0}
   defaultSlideSound: {fileID: 0}
-  fullscreenImage: {fileID: 0}
+  fullscreenImage: {fileID: 1757314935}
 --- !u!4 &982723999
 Transform:
   m_ObjectHideFlags: 0
@@ -859,6 +815,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1757314933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1757314934}
+  - component: {fileID: 1757314936}
+  - component: {fileID: 1757314935}
+  m_Layer: 5
+  m_Name: Character (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1757314934
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757314933}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 403677404}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -20.365313, y: 0.8521}
+  m_SizeDelta: {x: 869.0807, y: 499.1118}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1757314935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757314933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: db1449bd2b581b141acbbaf7bcea4a13, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1757314936
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757314933}
+  m_CullTransparentMesh: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
