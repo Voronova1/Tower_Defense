@@ -90,7 +90,7 @@ public class TowerManager : MonoBehaviour
 
     void Update()
     {
-        if (inputBlocked) return;
+        if (inputBlocked || GameManager.IsInputBlocked) return;
 
         HandleTouchInput();
     }

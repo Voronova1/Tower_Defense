@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class WaveSpawner : MonoBehaviour
 {
@@ -17,39 +18,53 @@ public class WaveSpawner : MonoBehaviour
     public float timeBetweenWaves = 5f;
     public bool loopWaves = false;
 
+    [Header("UI Elements")]
+    public TMP_Text waveCounterText;
+
     private int currentWaveIndex = 0;
     private bool isSpawning = false;
     private int lastSpawnPointIndex = -1;
     private List<GameObject> activeMobs = new List<GameObject>();
     public bool AllWavesCompleted { get; private set; } = false;
-    public bool IsSpawning => isSpawning; // Добавлено для GameManager
+    public bool IsSpawning => isSpawning;
 
     void Start()
     {
+        UpdateWaveCounter();
         StartCoroutine(WaveSpawnLoop());
+    }
+
+    private void UpdateWaveCounter()
+    {
+        if (waveCounterText != null)
+        {
+            // Используем Mathf.Min чтобы не выходить за пределы количества волн
+            int displayWaveIndex = Mathf.Min(currentWaveIndex + 1, waves.Length);
+            waveCounterText.text = $"Волна: {displayWaveIndex}/{waves.Length}";
+        }
     }
 
     IEnumerator WaveSpawnLoop()
     {
         while (currentWaveIndex < waves.Length)
         {
+            UpdateWaveCounter();
             Wave currentWave = waves[currentWaveIndex];
             yield return StartCoroutine(SpawnWave(currentWave));
 
-            // Ждем, пока все мобы будут уничтожены
             yield return StartCoroutine(WaitForAllMobsDefeated());
 
-            if (currentWaveIndex < waves.Length - 1)
+            currentWaveIndex++;
+            UpdateWaveCounter(); // Обновляем после увеличения индекса
+
+            if (currentWaveIndex < waves.Length)
             {
                 yield return new WaitForSeconds(timeBetweenWaves);
             }
-
-            currentWaveIndex++;
         }
 
         AllWavesCompleted = true;
 
-        // Уведомляем GameManager о завершении всех волн
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CheckLevelCompletion();
@@ -59,6 +74,7 @@ public class WaveSpawner : MonoBehaviour
         {
             currentWaveIndex = 0;
             AllWavesCompleted = false;
+            UpdateWaveCounter();
             StartCoroutine(WaveSpawnLoop());
         }
     }

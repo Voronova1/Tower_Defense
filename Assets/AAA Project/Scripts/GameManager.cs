@@ -1,8 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,6 +37,139 @@ public class GameManager : MonoBehaviour
     [Header("Input Blocking")]
     public static bool IsInputBlocked { get; private set; }
 
+    public enum GameSpeed { Paused, Normal, Fast, VeryFast }
+    private GameSpeed currentGameSpeed = GameSpeed.Normal;
+    private GameSpeed lastSpeedBeforePause = GameSpeed.Normal; // Запоминаем последнюю скорость
+
+    [Header("UI Elements")]
+    public Button pauseButton;
+    public Image pauseButtonImage;
+    public Sprite pauseIcon;
+    public Sprite playIcon;
+
+    public Button speedButton;
+    public Image speedButtonImage;
+    public Sprite normalSpeedIcon;
+    public Sprite fastSpeedIcon;
+    public Sprite veryFastSpeedIcon;
+    private bool isPaused = false;
+    private bool isProcessingClick = false;
+
+    public void TogglePause()
+    {
+        if (gameEnded || isProcessingClick) return;
+
+        isProcessingClick = true;
+
+        if (gameEnded) return; // Не позволяем паузиться при завершении уровня
+
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            // Ставим паузу
+            lastSpeedBeforePause = currentGameSpeed;
+            Time.timeScale = 0f;
+            currentGameSpeed = GameSpeed.Paused;
+            pauseButtonImage.sprite = playIcon;
+        }
+        else
+        {
+            // Снимаем паузу
+            Time.timeScale = lastSpeedBeforePause switch
+            {
+                GameSpeed.Normal => 1f,
+                GameSpeed.Fast => 1.5f,
+                GameSpeed.VeryFast => 2f,
+                _ => 1f
+            };
+            currentGameSpeed = lastSpeedBeforePause;
+            pauseButtonImage.sprite = pauseIcon;
+        }
+
+        UpdateSpeedUI();
+        StartCoroutine(ResetClickFlag());
+    }
+
+    public void CycleSpeed()
+    {
+        if (isProcessingClick) return;
+
+        isProcessingClick = true;
+        // Если игра на паузе - снимаем паузу и ставим Normal
+        if (currentGameSpeed == GameSpeed.Paused)
+        {
+            SetGameSpeed(GameSpeed.Normal, true);
+            return;
+        }
+
+        // Циклическое переключение только между Normal, Fast, VeryFast
+        GameSpeed nextSpeed = currentGameSpeed switch
+        {
+            GameSpeed.Normal => GameSpeed.Fast,
+            GameSpeed.Fast => GameSpeed.VeryFast,
+            GameSpeed.VeryFast => GameSpeed.Normal,
+            _ => GameSpeed.Normal
+        };
+
+        SetGameSpeed(nextSpeed, true);
+        StartCoroutine(ResetClickFlag());
+    }
+
+    private IEnumerator ResetClickFlag()
+    {
+        yield return new WaitForEndOfFrame();
+        isProcessingClick = false;
+    }
+
+    private void SetGameSpeed(GameSpeed speed, bool updateUI = false)
+    {
+        if (gameEnded || isPaused) return; // Не меняем скорость на паузе
+
+        currentGameSpeed = speed;
+
+        Time.timeScale = speed switch
+        {
+            GameSpeed.Normal => 1f,
+            GameSpeed.Fast => 1.5f,
+            GameSpeed.VeryFast => 2f,
+            _ => 1f
+        };
+
+        if (updateUI)
+        {
+            UpdateSpeedUI();
+        }
+
+    }
+
+    private void UpdateSpeedUI()
+    {
+        // Обновляем кнопку паузы
+        if (pauseButtonImage != null)
+        {
+            pauseButtonImage.sprite = currentGameSpeed == GameSpeed.Paused ? playIcon : pauseIcon;
+        }
+
+        // Обновляем кнопку скорости (только если не пауза)
+        if (speedButtonImage != null)
+        {
+            speedButtonImage.sprite = currentGameSpeed switch
+            {
+                GameSpeed.Normal => normalSpeedIcon,
+                GameSpeed.Fast => fastSpeedIcon,
+                GameSpeed.VeryFast => veryFastSpeedIcon,
+                _ => normalSpeedIcon
+            };
+
+            // Делаем кнопку скорости полупрозрачной при паузе
+            var color = speedButtonImage.color;
+            color.a = currentGameSpeed == GameSpeed.Paused ? 0.5f : 1f;
+            speedButtonImage.color = color;
+        }
+    }
+
+
     public static void SetInputBlock(bool blocked)
     {
         IsInputBlocked = blocked;
@@ -56,13 +191,31 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (pauseButton == null || speedButton == null)
+        {
+            Debug.LogError("Кнопки не назначены в инспекторе!");
+            return;
+        }
+
+        pauseButton.onClick.AddListener(TogglePause);
+        speedButton.onClick.AddListener(CycleSpeed);
+
+        // Принудительная установка начального состояния
+        isPaused = false;
+        Time.timeScale = 1f;
+        currentGameSpeed = GameSpeed.Normal;
+        UpdateSpeedUI();
+
+        // Устанавливаем начальную скорость
+        SetGameSpeed(GameSpeed.Normal, updateUI: true);
+
         waveSpawner = FindObjectOfType<WaveSpawner>();
         DetermineLevelType();
     }
 
     private void DetermineLevelType()
     {
-        // ����� �������� �������� ��� ���������� ������
+        // Более надежная проверка для пустынного уровня
         currentLevelType = SceneManager.GetActiveScene().name.ToLower().Contains("desert")
             ? LevelType.Desert
             : LevelType.Normal;
@@ -136,7 +289,7 @@ public class GameManager : MonoBehaviour
             gameEnded = true;
             Time.timeScale = 0f;
             levelFailedPanel.SetActive(true);
-            SetInputBlock(true); // ��������� ����
+            SetInputBlock(true); // Блокируем ввод
             OnGameEnded?.Invoke(true);
         }
     }
@@ -148,7 +301,7 @@ public class GameManager : MonoBehaviour
             gameEnded = true;
             Time.timeScale = 0f;
             levelCompletePanel.SetActive(true);
-            SetInputBlock(true); // ��������� ����
+            SetInputBlock(true); // Блокируем ввод
             OnGameEnded?.Invoke(true);
         }
     }

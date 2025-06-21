@@ -687,7 +687,7 @@ MonoBehaviour:
   - slideType: 1
     text: 
     characterSprite: {fileID: 0}
-    fullscreenImage: {fileID: 0}
+    fullscreenImage: {fileID: 21300000, guid: 0a7433ad9e72a304096f94b2aabb6979, type: 3}
     soundEffect: {fileID: 8300000, guid: 4e3ac9bcd39f1ba418ba93410d532f26, type: 3}
   - slideType: 0
     text: "\u041E\u043D\u0438 \u0447\u0443\u0432\u0441\u0442\u0432\u0443\u044E\u0442

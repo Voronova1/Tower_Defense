@@ -66,6 +66,8 @@ public class Tower : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0) return;
+
         if (targetEnemy == null)
         {
             MovementMobs nearest = GetNearestEnemy();
@@ -187,6 +189,8 @@ public class Tower : MonoBehaviour
     // Создание снаряда в отдельный метод для избежания дублирования кода
     private void FireBullet(MovementMobs enemy)
     {
+        if (GameManager.Instance != null && Time.timeScale == 0) return;
+
         GameObject newBullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
         Bullet bulletComponent = newBullet.GetComponent<Bullet>();
 
