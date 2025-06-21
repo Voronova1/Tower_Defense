@@ -1041,6 +1041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8502d4a1c7bb2a4eaf7cb3f1465f767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentLevelType: 0
   playerHealth: 5
   healthText: {fileID: 724979052}
   money: 100
@@ -23997,6 +23998,10 @@ PrefabInstance:
     - target: {fileID: 4370405821629045308, guid: 598edeaa90b76cf4c92689cbc41f4c57, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 5349908278085632499, guid: 598edeaa90b76cf4c92689cbc41f4c57, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
