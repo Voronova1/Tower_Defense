@@ -1553,9 +1553,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9b0ee47597f6a641869de7e3e7f4b10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRadius: 50
-  startTimeBtwAttack: 1
-  bulletPrefab: {fileID: 6921824203374264943, guid: 503ff8e45a95d3c428b5c4a191412fa3, type: 3}
+  towerType: 0
+  maxTargets: 3
+  attackRadius: 60
+  startTimeBtwAttack: 2
+  bulletPrefab: {fileID: 6921824203374264943, guid: ddb3becbb4447894cb549534eef13686, type: 3}
   shootPoint: {fileID: 2042167716502792350}
   nextTower: {fileID: 0}
   cost: 333
+  desertSpeedMultiplier: 0.75
+  desertFireRateMultiplier: 1.5
+  oasisLayer:
+    serializedVersion: 2
+    m_Bits: 16
+  oasisCheckRadius: 15

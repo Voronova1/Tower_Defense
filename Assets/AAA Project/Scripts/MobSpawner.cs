@@ -5,7 +5,7 @@ public class MobSpawner : MonoBehaviour
     public GameObject mobPrefab; // Префаб моба
     public Transform[] spawnPoints; // Точки спавна
     public float spawnInterval = 3f; // Интервал между спавном
-    public int maxMobs = 10; // Максимальное количество мобов
+    public int maxMobs = 10; 
 
     private float timer;
     private int currentMobs;

@@ -6,6 +6,9 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    public enum LevelType { Normal, Desert }
+    public LevelType currentLevelType = LevelType.Normal;
+
     public static GameManager Instance { get; private set; }
     public static event Action<bool> OnGameEnded;
 
@@ -29,6 +32,13 @@ public class GameManager : MonoBehaviour
     private bool isQuitting = false;
     private bool gameEnded = false;
 
+    [Header("Input Blocking")]
+    public static bool IsInputBlocked { get; private set; }
+
+    public static void SetInputBlock(bool blocked)
+    {
+        IsInputBlocked = blocked;
+    }
     void Awake()
     {
         if (Instance == null)
@@ -47,6 +57,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         waveSpawner = FindObjectOfType<WaveSpawner>();
+        DetermineLevelType();
+    }
+
+    private void DetermineLevelType()
+    {
+        // Более надежная проверка для пустынного уровня
+        currentLevelType = SceneManager.GetActiveScene().name.ToLower().Contains("desert")
+            ? LevelType.Desert
+            : LevelType.Normal;
     }
 
     void InitializeUI()
@@ -94,9 +113,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CheckLevelCompletion()
+    public void CheckLevelCompletion()
     {
-        if (waveSpawner != null && waveSpawner.AllWavesCompleted && EnemyList.Count == 0 && playerHealth > 0)
+        if (gameEnded) return;
+        if (waveSpawner == null) waveSpawner = FindObjectOfType<WaveSpawner>();
+        if (waveSpawner == null) return;
+
+        bool wavesDone = waveSpawner.AllWavesCompleted;
+        bool noActiveEnemies = EnemyList.Count == 0;
+        bool notSpawning = !waveSpawner.IsSpawning;
+
+        if (wavesDone && noActiveEnemies && notSpawning && playerHealth > 0)
         {
             LevelComplete();
         }
@@ -109,6 +136,7 @@ public class GameManager : MonoBehaviour
             gameEnded = true;
             Time.timeScale = 0f;
             levelFailedPanel.SetActive(true);
+            SetInputBlock(true); // Блокируем ввод
             OnGameEnded?.Invoke(true);
         }
     }
@@ -120,6 +148,7 @@ public class GameManager : MonoBehaviour
             gameEnded = true;
             Time.timeScale = 0f;
             levelCompletePanel.SetActive(true);
+            SetInputBlock(true); // Блокируем ввод
             OnGameEnded?.Invoke(true);
         }
     }
@@ -143,5 +172,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         gameEnded = false;
         SceneManager.LoadScene(dialogueScene);
+    }
+
+    void OnApplicationQuit()
+    {
+        isQuitting = true;
     }
 }
