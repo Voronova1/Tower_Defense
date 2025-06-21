@@ -38,8 +38,19 @@ public class Tower : MonoBehaviour
     private bool isInDesert = false;
     private bool hasOasisNearby = false;
 
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip shootSound;
+    private AudioSource audioSource;
+
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.playOnAwake = false;
+
         gameManager = FindObjectOfType<GameManager>();
         originalFireRate = startTimeBtwAttack;
 
@@ -197,6 +208,11 @@ public class Tower : MonoBehaviour
         else
         {
             Debug.LogError("У префаба снаряда нет компонента Bullet!");
+        }
+
+        if (shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
         }
     }
 
