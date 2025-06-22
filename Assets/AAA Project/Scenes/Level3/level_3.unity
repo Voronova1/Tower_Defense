@@ -1890,13 +1890,13 @@ MonoBehaviour:
   dialogueScene: IntroDialogue3_2
   pauseButton: {fileID: 1318351429}
   pauseButtonImage: {fileID: 1435396326}
-  pauseIcon: {fileID: 21300000, guid: 72541a7b30494f3469373be28d22eea8, type: 3}
-  playIcon: {fileID: 21300000, guid: 6f9c8a5aebee7614f861af7b7b8aba7d, type: 3}
+  pauseIcon: {fileID: 21300000, guid: 404bc7bdd0a25cb4ab62444478a68cf8, type: 3}
+  playIcon: {fileID: 21300000, guid: 44748a8e9bae63447a30a8c7bc28ca4c, type: 3}
   speedButton: {fileID: 1918345994}
   speedButtonImage: {fileID: 1710537344}
-  normalSpeedIcon: {fileID: 21300000, guid: 6f9c8a5aebee7614f861af7b7b8aba7d, type: 3}
-  fastSpeedIcon: {fileID: 21300000, guid: 78a4bf175ee90064f94fd572aafae441, type: 3}
-  veryFastSpeedIcon: {fileID: 21300000, guid: 2d9f2d9616896c14cb9ed8b0cf297d1c, type: 3}
+  normalSpeedIcon: {fileID: 21300000, guid: 44748a8e9bae63447a30a8c7bc28ca4c, type: 3}
+  fastSpeedIcon: {fileID: 21300000, guid: decf334a9755d814fa7e96faa16a9d92, type: 3}
+  veryFastSpeedIcon: {fileID: 21300000, guid: 4030698869bb71a42b1310c0ed148644, type: 3}
 --- !u!4 &452170003
 Transform:
   m_ObjectHideFlags: 0
@@ -2919,7 +2919,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849b1738ac906b74da65a2c3e74b36c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tracks: []
+  tracks:
+  - spawnPoints:
+    - {fileID: 1526412624}
+    - {fileID: 706575679}
+    waypointTag: MovingPoint
+    altWaypointTag: MovingPoint2
+    waves:
+    - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
+      mobCount: 6
+      spawnRate: 1
+    - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
+      mobCount: 6
+      spawnRate: 1
+    - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
+      mobCount: 6
+      spawnRate: 1
+    waypoints: []
+    altWaypoints: []
   timeBetweenWaves: 2
   loopWaves: 0
   waveCounterText: {fileID: 1820293499}
