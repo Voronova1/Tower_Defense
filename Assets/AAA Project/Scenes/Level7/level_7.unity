@@ -1050,6 +1050,15 @@ MonoBehaviour:
   levelCompletePanel: {fileID: 1657692538}
   mainMenuScene: Test_terrain
   dialogueScene: IntroDialogue1_2
+  pauseButton: {fileID: 0}
+  pauseButtonImage: {fileID: 0}
+  pauseIcon: {fileID: 0}
+  playIcon: {fileID: 0}
+  speedButton: {fileID: 0}
+  speedButtonImage: {fileID: 0}
+  normalSpeedIcon: {fileID: 0}
+  fastSpeedIcon: {fileID: 0}
+  veryFastSpeedIcon: {fileID: 0}
 --- !u!4 &452170003
 Transform:
   m_ObjectHideFlags: 0
@@ -1976,6 +1985,7 @@ MonoBehaviour:
   - {fileID: 706575679}
   timeBetweenWaves: 10
   loopWaves: 0
+  waveCounterText: {fileID: 0}
 --- !u!4 &794006355 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9045566267915593464, guid: 59ec8e297fd6a0c44a61946bf76b6c76, type: 3}
