@@ -2557,7 +2557,7 @@ MonoBehaviour:
   currentLevelType: 0
   playerHealth: 5
   healthText: {fileID: 724979052}
-  money: 100
+  money: 200
   moneyText: {fileID: 1675905877}
   levelFailedPanel: {fileID: 1903469028}
   levelCompletePanel: {fileID: 1657692538}

@@ -2999,11 +2999,7 @@ MonoBehaviour:
     - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
       mobCount: 6
       spawnRate: 1
-    - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
-      mobCount: 6
-      spawnRate: 1
-    waypoints:
-    - {fileID: 235841240}
+    waypoints: []
     altWaypoints: []
   timeBetweenWaves: 2
   loopWaves: 0
@@ -6531,6 +6527,58 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d9135c56f306e14baa814f13d1a1193, type: 3}
+--- !u!1 &1933274850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1933274852}
+  - component: {fileID: 1933274851}
+  m_Layer: 0
+  m_Name: WaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1933274851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933274850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9cec88081ce9d6498565c7ba5357d67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globalWaves:
+  - {mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}, mobCountPerTrack: 5, spawnRate: 1, delayAfterWave: 2}
+  - {mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}, mobCountPerTrack: 5, spawnRate: 1, delayAfterWave: 2}
+  spawners:
+  - {fileID: 738522359}
+  timeBetweenWaves: 2
+  loopWaves: 0
+  currentWaveIndex: 0
+--- !u!4 &1933274852
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933274850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1140, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1941931280
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7447,6 +7495,7 @@ SceneRoots:
   - {fileID: 2084461828}
   - {fileID: 235841240}
   - {fileID: 738522358}
+  - {fileID: 1933274852}
   - {fileID: 452170003}
   - {fileID: 4924279774369020478}
   - {fileID: 1821909581}
