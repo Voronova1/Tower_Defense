@@ -5,10 +5,11 @@ public class MobSpawner : MonoBehaviour
     public GameObject mobPrefab; // Префаб моба
     public Transform[] spawnPoints; // Точки спавна
     public float spawnInterval = 3f; // Интервал между спавном
-    public int maxMobs = 10; 
+    public int maxMobs = 10;
 
     private float timer;
     private int currentMobs;
+    private int lastSpawnPointIndex = -1;
 
     void Update()
     {
@@ -26,8 +27,9 @@ public class MobSpawner : MonoBehaviour
     {
         if (spawnPoints.Length == 0) return;
 
-        // Выбираем случайную точку спавна
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        // Выбираем следующую точку спавна по порядку
+        lastSpawnPointIndex = (lastSpawnPointIndex + 1) % spawnPoints.Length;
+        Transform spawnPoint = spawnPoints[lastSpawnPointIndex];
 
         // Создаём моба
         Instantiate(mobPrefab, spawnPoint.position, spawnPoint.rotation);

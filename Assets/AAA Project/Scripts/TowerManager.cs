@@ -188,6 +188,48 @@ public class TowerManager : MonoBehaviour
             contextMenuMaxUp.SetActive(false);
     }
 
+    private Vector2 GetAdjustedMenuPosition(Vector2 screenPosition, RectTransform menuRect)
+    {
+        // Получаем размеры меню и канваса
+        Vector2 menuSize = menuRect.rect.size;
+        Vector2 canvasSize = menuParent.rect.size;
+
+        // Конвертируем screenPosition в локальные координаты канваса
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            menuParent,
+            screenPosition,
+            null,
+            out Vector2 localPoint
+        );
+
+        // Корректируем позицию, чтобы меню не выходило за границы
+        float halfMenuWidth = menuSize.x / 2;
+        float halfMenuHeight = menuSize.y / 2;
+
+        // Проверяем правую границу
+        if (localPoint.x + halfMenuWidth > canvasSize.x / 2)
+        {
+            localPoint.x = canvasSize.x / 2 - halfMenuWidth;
+        }
+        // Проверяем левую границу
+        else if (localPoint.x - halfMenuWidth < -canvasSize.x / 2)
+        {
+            localPoint.x = -canvasSize.x / 2 + halfMenuWidth;
+        }
+
+        // Проверяем верхнюю границу
+        if (localPoint.y + halfMenuHeight > canvasSize.y / 2)
+        {
+            localPoint.y = canvasSize.y / 2 - halfMenuHeight;
+        }
+        // Проверяем нижнюю границу
+        else if (localPoint.y - halfMenuHeight < -canvasSize.y / 2)
+        {
+            localPoint.y = -canvasSize.y / 2 + halfMenuHeight;
+        }
+
+        return localPoint;
+    }
     void ShowContextMenu(Vector2 screenPosition)
     {
         if (contextMenu == null || inputBlocked) return;
@@ -230,17 +272,15 @@ public class TowerManager : MonoBehaviour
             {
                 contextMenu.transform.GetChild(i).gameObject.SetActive(false);
             }
+
+
         }
 
         // Показываем меню и устанавливаем позицию
         contextMenu.SetActive(true);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            menuParent,
-            screenPosition,
-            null,
-            out Vector2 localPoint
-        );
-        contextMenu.GetComponent<RectTransform>().localPosition = localPoint;
+        RectTransform menuRect = contextMenu.GetComponent<RectTransform>();
+        Vector2 adjustedPosition = GetAdjustedMenuPosition(screenPosition, menuRect);
+        menuRect.localPosition = adjustedPosition;
     }
 
     void ShowContextMenuUp(Vector2 screenPosition)
@@ -292,13 +332,8 @@ public class TowerManager : MonoBehaviour
 
         // Активируем меню и устанавливаем позицию
         contextMenuUp.SetActive(true);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            menuParent,
-            screenPosition,
-            null,
-            out Vector2 localPoint
-        );
-        contextMenuUp.GetComponent<RectTransform>().localPosition = localPoint;
+        Vector2 adjustedPosition = GetAdjustedMenuPosition(screenPosition, contextMenuUp.GetComponent<RectTransform>());
+        contextMenuUp.GetComponent<RectTransform>().localPosition = adjustedPosition;
     }
 
     void ShowContextMenuMaxUp(Vector2 screenPosition)
@@ -310,8 +345,8 @@ public class TowerManager : MonoBehaviour
 
         contextMenuMaxUp.transform.GetChild(1).GetComponent<TMP_Text>().text = ((int)Mathf.Round(tower.cost * 0.6f)).ToString();
         contextMenuMaxUp.SetActive(true);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(menuParent, screenPosition, null, out Vector2 localPoint);
-        contextMenuMaxUp.GetComponent<RectTransform>().localPosition = localPoint;
+        Vector2 adjustedPosition = GetAdjustedMenuPosition(screenPosition, contextMenuMaxUp.GetComponent<RectTransform>());
+        contextMenuMaxUp.GetComponent<RectTransform>().localPosition = adjustedPosition;
     }
 
     public void BuildTower(GameObject towerPrefab)

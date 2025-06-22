@@ -2,9 +2,21 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 public class WaveSpawner : MonoBehaviour
 {
+    [System.Serializable]
+    public class TrackConfig
+    {
+        public Transform[] spawnPoints;  // Точки спавна для этой дорожки
+        public string waypointTag;      // Тег для основных точек пути (MovingPoint0, MovingPoint1)
+        public string altWaypointTag;   // Тег для альтернативных точек пути (MovingPoint1, MovingPoint0)
+        public Wave[] waves;           // Волны для этой дорожки
+        [HideInInspector] public Transform[] waypoints;    // Основные точки
+        [HideInInspector] public Transform[] altWaypoints; // Альтернативные точки
+    }
+
     [System.Serializable]
     public class Wave
     {
@@ -13,119 +25,173 @@ public class WaveSpawner : MonoBehaviour
         public float spawnRate;
     }
 
-    public Wave[] waves;
-    public Transform[] spawnPoints;
-    public float timeBetweenWaves = 5f;
+    public TrackConfig[] tracks;         // Конфигурация для каждой дорожки
+    public float timeBetweenWaves = 2f;
     public bool loopWaves = false;
 
-    [Header("UI Elements")]
+    [Header("UI")]
     public TMP_Text waveCounterText;
 
-    private int currentWaveIndex = 0;
-    private bool isSpawning = false;
-    private int lastSpawnPointIndex = -1;
-    private List<GameObject> activeMobs = new List<GameObject>();
-    public bool AllWavesCompleted { get; private set; } = false;
-    public bool IsSpawning => isSpawning;
+    private int[] currentWaveIndices;
+    private bool[] isSpawning;
+    private List<GameObject>[] activeMobsPerTrack;
+    private int[] lastSpawnPointIndices;
 
     void Start()
     {
-        UpdateWaveCounter();
-        StartCoroutine(WaveSpawnLoop());
+        InitializeTracks();
+        StartAllTrackSpawners();
+    }
+
+    private void InitializeTracks()
+    {
+        currentWaveIndices = new int[tracks.Length];
+        isSpawning = new bool[tracks.Length];
+        activeMobsPerTrack = new List<GameObject>[tracks.Length];
+        lastSpawnPointIndices = new int[tracks.Length];
+
+        for (int i = 0; i < tracks.Length; i++)
+        {
+            // Заполняем waypoints для каждой дорожки автоматически по тегу
+            tracks[i].waypoints = GetSortedWaypoints(tracks[i].waypointTag);
+            tracks[i].altWaypoints = GetSortedWaypoints(tracks[i].altWaypointTag);
+
+            activeMobsPerTrack[i] = new List<GameObject>();
+            lastSpawnPointIndices[i] = -1;
+        }
+    }
+
+    private Transform[] GetSortedWaypoints(string tag)
+    {
+        return GameObject.FindGameObjectsWithTag(tag)
+            .Where(go => go != null)
+            .OrderBy(go => go.name)
+            .Select(go => go.transform)
+            .ToArray();
+    }
+
+    private void StartAllTrackSpawners()
+    {
+        for (int i = 0; i < tracks.Length; i++)
+        {
+            StartCoroutine(TrackSpawnLoop(i));
+        }
+    }
+
+    IEnumerator TrackSpawnLoop(int trackIndex)
+    {
+        TrackConfig track = tracks[trackIndex];
+
+        while (currentWaveIndices[trackIndex] < track.waves.Length)
+        {
+            Wave currentWave = track.waves[currentWaveIndices[trackIndex]];
+
+            // Перенесено ДО начала спавна волны
+            currentWaveIndices[trackIndex]++;
+            UpdateWaveCounter();
+
+            yield return StartCoroutine(SpawnWave(trackIndex, currentWave));
+            yield return StartCoroutine(WaitForAllMobsDefeated(trackIndex));
+
+            if (currentWaveIndices[trackIndex] < track.waves.Length)
+            {
+                yield return new WaitForSeconds(timeBetweenWaves);
+            }
+        }
+
+        if (loopWaves)
+        {
+            currentWaveIndices[trackIndex] = 0;
+            StartCoroutine(TrackSpawnLoop(trackIndex));
+        }
+    }
+
+    IEnumerator SpawnWave(int trackIndex, Wave wave)
+    {
+        isSpawning[trackIndex] = true;
+        activeMobsPerTrack[trackIndex].Clear();
+
+        for (int i = 0; i < wave.mobCount; i++)
+        {
+            GameObject mob = SpawnMob(trackIndex, wave.mobPrefab);
+            if (mob != null) activeMobsPerTrack[trackIndex].Add(mob);
+            yield return new WaitForSeconds(1f / wave.spawnRate);
+        }
+
+        isSpawning[trackIndex] = false;
+    }
+
+    GameObject SpawnMob(int trackIndex, GameObject mobPrefab)
+    {
+        TrackConfig track = tracks[trackIndex];
+
+        if (track.spawnPoints.Length == 0 || mobPrefab == null)
+            return null;
+
+        // Выбираем следующую точку спавна по порядку
+        lastSpawnPointIndices[trackIndex] =
+            (lastSpawnPointIndices[trackIndex] + 1) % track.spawnPoints.Length;
+        Transform spawnPoint = track.spawnPoints[lastSpawnPointIndices[trackIndex]];
+
+        GameObject mob = Instantiate(mobPrefab, spawnPoint.position, spawnPoint.rotation);
+        MovementMobs movement = mob.GetComponent<MovementMobs>();
+
+        if (movement != null)
+        {
+            // Передаем обе группы точек для случайного выбора
+            movement.Initialize(track.waypoints, track.altWaypoints);
+        }
+
+        return mob;
+    }
+
+    IEnumerator WaitForAllMobsDefeated(int trackIndex)
+    {
+        while (true)
+        {
+            activeMobsPerTrack[trackIndex].RemoveAll(mob => mob == null);
+
+            if (activeMobsPerTrack[trackIndex].Count == 0)
+                yield break;
+
+            yield return null;
+        }
     }
 
     private void UpdateWaveCounter()
     {
         if (waveCounterText != null)
         {
-            // Используем Mathf.Min чтобы не выходить за пределы количества волн
-            int displayWaveIndex = Mathf.Min(currentWaveIndex + 1, waves.Length);
-            waveCounterText.text = $"Волна: {displayWaveIndex}/{waves.Length}";
+            // Отображаем прогресс по всем дорожкам
+            int totalWaves = tracks.Sum(t => t.waves.Length);
+            int completedWaves = currentWaveIndices.Sum();
+            waveCounterText.text = $"{completedWaves}/{totalWaves}";
         }
     }
 
-    IEnumerator WaveSpawnLoop()
+    public bool AllWavesCompleted
     {
-        while (currentWaveIndex < waves.Length)
+        get
         {
-            UpdateWaveCounter();
-            Wave currentWave = waves[currentWaveIndex];
-            yield return StartCoroutine(SpawnWave(currentWave));
+            if (currentWaveIndices == null || tracks == null) return false;
 
-            yield return StartCoroutine(WaitForAllMobsDefeated());
-
-            currentWaveIndex++;
-            UpdateWaveCounter(); // Обновляем после увеличения индекса
-
-            if (currentWaveIndex < waves.Length)
+            for (int i = 0; i < tracks.Length; i++)
             {
-                yield return new WaitForSeconds(timeBetweenWaves);
-            }
-        }
-
-        AllWavesCompleted = true;
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.CheckLevelCompletion();
-        }
-
-        if (loopWaves)
-        {
-            currentWaveIndex = 0;
-            AllWavesCompleted = false;
-            UpdateWaveCounter();
-            StartCoroutine(WaveSpawnLoop());
-        }
-    }
-
-    IEnumerator SpawnWave(Wave wave)
-    {
-        isSpawning = true;
-        activeMobs.Clear();
-
-        for (int i = 0; i < wave.mobCount; i++)
-        {
-            GameObject mob = SpawnMob(wave.mobPrefab);
-            if (mob != null)
-            {
-                activeMobs.Add(mob);
-            }
-            yield return new WaitForSeconds(1f / wave.spawnRate);
-        }
-
-        isSpawning = false;
-    }
-
-    GameObject SpawnMob(GameObject mobPrefab)
-    {
-        if (spawnPoints.Length == 0 || mobPrefab == null)
-            return null;
-
-        lastSpawnPointIndex = (lastSpawnPointIndex + 1) % spawnPoints.Length;
-        Transform spawnPoint = spawnPoints[lastSpawnPointIndex];
-
-        return Instantiate(mobPrefab, spawnPoint.position, spawnPoint.rotation);
-    }
-
-    IEnumerator WaitForAllMobsDefeated()
-    {
-        while (true)
-        {
-            // Удаляем уничтоженных мобов из списка
-            activeMobs.RemoveAll(mob => mob == null || !mob.activeSelf);
-
-            if (activeMobs.Count == 0)
-            {
-                // Дополнительная проверка для GameManager
-                if (GameManager.Instance != null)
+                if (currentWaveIndices[i] < tracks[i].waves.Length)
                 {
-                    GameManager.Instance.CheckLevelCompletion();
+                    return false;
                 }
-                yield break;
             }
+            return true;
+        }
+    }
 
-            yield return null;
+    public bool IsSpawning
+    {
+        get
+        {
+            if (isSpawning == null) return false;
+            return isSpawning.Any(x => x);
         }
     }
 }

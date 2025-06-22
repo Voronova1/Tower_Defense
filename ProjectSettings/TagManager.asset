@@ -10,6 +10,8 @@ TagManager:
   - Enemy
   - Tower
   - TowerMaxUp
+  - MovingPoint3
+  - MovingPoint4
   layers:
   - Default
   - TransparentFX
