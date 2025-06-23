@@ -21,20 +21,17 @@ public class MovementMobs : MonoBehaviour
     private bool isBeingDestroyed = false;
     private bool killedByPlayer = false; // Новый флаг для отслеживания смерти от игрока
 
-    public void Initialize(params Transform[][] groups)
+    public void Initialize(params Transform[] waypoints)
     {
-        // Фильтруем пустые группы
-        waypointGroups = groups?
-            .Where(g => g != null && g.Length > 0)
-            .ToArray();
-
-        if (waypointGroups == null || waypointGroups.Length == 0)
+        // Теперь принимаем один массив waypoints вместо нескольких групп
+        if (waypoints == null || waypoints.Length == 0)
         {
-            Debug.LogError("No valid waypoint groups provided!");
+            Debug.LogError("No valid waypoints provided!");
             SafeDestroy();
             return;
         }
 
+        this.waypointGroups = new Transform[][] { waypoints };
         currentPointIndex = 0;
         actualSpeed = Random.Range(baseSpeed * 1f, baseSpeed * 1f);
 
@@ -49,6 +46,7 @@ public class MovementMobs : MonoBehaviour
         gameManager.AddEnemyOnList(this);
         SelectNextWaypoint();
     }
+
 
     private void SafeDestroy()
     {

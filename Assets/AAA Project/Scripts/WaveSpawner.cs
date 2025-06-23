@@ -138,8 +138,15 @@ public class WaveSpawner : MonoBehaviour
 
         if (movement != null)
         {
-            // Передаем обе группы точек для случайного выбора
-            movement.Initialize(track.waypoints, track.altWaypoints);
+            // Определяем какой путь использовать в зависимости от точки спавна
+            if (lastSpawnPointIndices[trackIndex] == 0) // Первая точка спавна
+            {
+                movement.Initialize(track.waypoints);
+            }
+            else // Вторая точка спавна
+            {
+                movement.Initialize(track.altWaypoints);
+            }
         }
 
         return mob;
