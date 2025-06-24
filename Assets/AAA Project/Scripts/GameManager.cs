@@ -55,6 +55,22 @@ public class GameManager : MonoBehaviour
     private bool isPaused = false;
     private bool isProcessingClick = false;
 
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        IsInputBlocked = false;
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     public void TogglePause()
     {
         if (gameEnded || isProcessingClick) return;

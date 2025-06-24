@@ -27,6 +27,10 @@ public class TowerManager : MonoBehaviour
     public bool isLevel1 = false;
     public bool isLevel2 = false;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugMode = true;
+
+    private static TowerManager _instance;
     void Start()
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -40,6 +44,88 @@ public class TowerManager : MonoBehaviour
         HideAllContextMenus();
 
         GameManager.OnGameEnded += HandleGameEnded;
+    }
+
+    void Awake()
+    {
+        // Реализация синглтона
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        _instance = this;
+        DontDestroyOnLoad(gameObject); // Делаем persistent
+
+        // Полный сброс состояния
+        FullReset();
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        GameManager.OnGameEnded += HandleGameEnded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        GameManager.OnGameEnded -= HandleGameEnded;
+    }
+
+    private void FullReset()
+    {
+        inputBlocked = false;
+        selectedBuildPoint = null;
+        selectedTower = null;
+        mainCamera = null;
+
+        // Принудительный сброс Input System
+        if (playerInput != null)
+        {
+            playerInput.actions = null;
+            playerInput.enabled = false;
+            playerInput.enabled = true;
+        }
+
+        HideAllContextMenus();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FullReset();
+        InitializeForNewScene();
+
+        // Убедимся, что есть EventSystem
+        EnsureEventSystemExists();
+    }
+
+    private void InitializeForNewScene()
+    {
+        mainCamera = Camera.main;
+        playerInput = GetComponent<PlayerInput>();
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        isLevel1 = sceneName.Contains("level_1");
+        isLevel2 = sceneName.Contains("level_2");
+
+        if (debugMode)
+            Debug.Log($"Инициализация для {sceneName}. isLevel1: {isLevel1}, isLevel2: {isLevel2}");
+    }
+
+    private void EnsureEventSystemExists()
+    {
+        // Если нет EventSystem - создаём
+        if (FindObjectOfType<EventSystem>() == null)
+        {
+            var eventSystem = new GameObject("EventSystem");
+            eventSystem.AddComponent<EventSystem>();
+            eventSystem.AddComponent<StandaloneInputModule>();
+
+            if (debugMode)
+                Debug.Log("Создан новый EventSystem для сцены");
+        }
     }
 
     void OnDestroy()
@@ -125,7 +211,7 @@ public class TowerManager : MonoBehaviour
                  IsClickOnPanel(GameManager.Instance.levelCompletePanel, screenPosition)));
     }
 
-   
+
 
     bool IsClickOnPanel(GameObject panel, Vector2 position)
     {
