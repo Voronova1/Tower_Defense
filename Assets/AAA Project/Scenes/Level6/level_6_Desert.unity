@@ -3202,7 +3202,7 @@ MonoBehaviour:
   levelFailedPanel: {fileID: 1903469028}
   levelCompletePanel: {fileID: 1657692538}
   mainMenuScene: Test_terrain
-  dialogueScene: IntroDialogue1_2
+  dialogueScene: IntroDialogue6_2
   pauseButton: {fileID: 1899450793}
   pauseButtonImage: {fileID: 915678607}
   pauseIcon: {fileID: 21300000, guid: 404bc7bdd0a25cb4ab62444478a68cf8, type: 3}

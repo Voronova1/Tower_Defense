@@ -38,7 +38,11 @@ public class DialogueManager : MonoBehaviour
     private PlayerInput playerInput;
     private InputAction touchPressAction;
 
-    public Image fullscreenImage; // Добавьте это в UI (новый Image компонент)
+    public Image fullscreenImage;
+
+    public enum DialogueType { Intro, Outro }
+    public DialogueType dialogueType = DialogueType.Intro;
+    public int associatedLevel = 1; 
 
     void Start()
     {
@@ -210,12 +214,36 @@ public class DialogueManager : MonoBehaviour
 
         if (currentLine < dialogueLines.Length - 1)
         {
-            currentLine++; 
+            currentLine++;
             ShowLine(currentLine);
         }
         else
         {
-            SceneManager.LoadScene(nextSceneName);
+            // Определяем тип диалога по названию сцены
+            string sceneName = SceneManager.GetActiveScene().name;
+
+            // Если это завершающий диалог (_2)
+            if (sceneName.EndsWith("_2"))
+            {
+                // Сохраняем прогресс прохождения уровня
+                LevelProgressManager.Instance.MarkLevelCompleted();
+
+                // Для отладки
+                int currentLevel = LevelProgressManager.Instance.GetCurrentLevelNumber();
+                Debug.Log($"Completed level {currentLevel}. Loading MainMenu");
+            }
+
+            // Переходим на следующую сцену
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
+            else
+            {
+                // По умолчанию возвращаем в меню
+                SceneManager.LoadScene("MainMenu");
+                Debug.LogWarning("Next scene name not specified! Loading MainMenu by default");
+            }
         }
     }
 }

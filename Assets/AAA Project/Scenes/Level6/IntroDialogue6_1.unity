@@ -690,10 +690,12 @@ MonoBehaviour:
   dialogueText: {fileID: 100580649}
   characterImage: {fileID: 403677405}
   tapPrompt: {fileID: 403677403}
-  nextSceneName: level_3
+  nextSceneName: level_6_Desert
   audioSource: {fileID: 0}
   defaultSlideSound: {fileID: 0}
   fullscreenImage: {fileID: 2067136513}
+  dialogueType: 0
+  associatedLevel: 6
 --- !u!4 &982723999
 Transform:
   m_ObjectHideFlags: 0
