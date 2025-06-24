@@ -6556,14 +6556,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cec88081ce9d6498565c7ba5357d67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  globalWaves:
-  - {mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}, mobCountPerTrack: 5, spawnRate: 1, delayAfterWave: 2}
-  - {mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}, mobCountPerTrack: 5, spawnRate: 1, delayAfterWave: 2}
-  spawners:
-  - {fileID: 738522359}
-  timeBetweenWaves: 2
-  loopWaves: 0
-  currentWaveIndex: 0
 --- !u!4 &1933274852
 Transform:
   m_ObjectHideFlags: 0
