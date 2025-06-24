@@ -10,3 +10,5 @@
 33	5773	7724714906869354	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	53d6014c37b484df
 1	5945	7724714908570493	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	271992a175542fb6
 5945	6114	7724714910219193	D:/Users/Enotik/Tower_Defense/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6y5v3ch4/obj/arm64-v8a/libgame.so	d082a43967d5e717
+20	972	7724841331252350	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	f846ec26bb5a9a58
+973	1445	7724841336060529	D:/Users/Enotik/Tower_Defense/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6y5v3ch4/obj/arm64-v8a/libswappywrapper.so	53fe2f5d0bf06926

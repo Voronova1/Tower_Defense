@@ -66,8 +66,14 @@ EditorBuildSettings:
     path: Assets/AAA Project/Scenes/Level6/IntroDialogue6_2.unity
     guid: 783cf10911a15fb459fe8772200e322c
   - enabled: 1
+    path: Assets/AAA Project/Scenes/Level7/IntroDialogue7_1.unity
+    guid: 1ab1b73f0c1c72641ae52bbe7e2de9ef
+  - enabled: 1
     path: Assets/AAA Project/Scenes/Level7/level_7.unity
     guid: b2586054e3b690546a5e40b0cc0a02b2
+  - enabled: 1
+    path: Assets/AAA Project/Scenes/Level7/IntroDialogue7_2.unity
+    guid: 911ad59558693dd48af4f1454d548a13
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0
