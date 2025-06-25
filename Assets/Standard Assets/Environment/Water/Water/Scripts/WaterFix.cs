@@ -24,7 +24,29 @@ public class WaterFix : MonoBehaviour
         if (!water.enabled || !water.GetComponent<Renderer>().enabled)
             return;
 
+        // Добавляем проверки видимости воды
+        if (!IsWaterVisible(cam))
+            return;
+
+        // Проверяем размеры камеры
+        if (cam.pixelWidth < 32 || cam.pixelHeight < 32)
+            return;
+
         currentCamera = cam;
+
+        // Вызываем обновление параметров воды перед рендерингом
+        water.PreCullUpdate();
         water.RenderWaterEffects(cam);
+    }
+
+    private bool IsWaterVisible(Camera cam)
+    {
+        Renderer waterRenderer = water.GetComponent<Renderer>();
+        if (waterRenderer == null)
+            return false;
+
+        // Проверяем, находится ли вода в frustum камеры
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
+        return GeometryUtility.TestPlanesAABB(planes, waterRenderer.bounds);
     }
 }

@@ -40,15 +40,14 @@ namespace UnityStandardAssets.Water
 
         public void PreCullUpdate()
         {
-            // Обновление параметров воды
-            if (!GetComponent<Renderer>()) return;
+            if (!GetComponent<Renderer>() || !GetComponent<Renderer>().sharedMaterial)
+                return;
 
+            // Обновляем параметры волн
             Material mat = GetComponent<Renderer>().sharedMaterial;
-            if (!mat) return;
-
-            // Расчет волн и параметров материала
             Vector4 waveSpeed = mat.GetVector("WaveSpeed");
             float waveScale = mat.GetFloat("_WaveScale");
+           
             Vector4 waveScale4 = new Vector4(waveScale, waveScale, waveScale * 0.4f, waveScale * 0.45f);
 
             double t = Time.timeSinceLevelLoad / 20.0;
@@ -84,6 +83,8 @@ namespace UnityStandardAssets.Water
 
         public void RenderWaterEffects(Camera cam)
         {
+            if (cam == null || cam.pixelWidth <= 0 || cam.pixelHeight <= 0)
+                return;
             if (s_InsideWater) return;
             s_InsideWater = true;
 
@@ -255,6 +256,13 @@ namespace UnityStandardAssets.Water
         // On-demand create any objects we need for water
         void CreateWaterObjects(Camera currentCamera, out Camera reflectionCamera, out Camera refractionCamera)
         {
+            if (currentCamera == null)
+            {
+                reflectionCamera = null;
+                refractionCamera = null;
+                return;
+            }
+
             WaterMode mode = GetWaterMode();
 
             reflectionCamera = null;
