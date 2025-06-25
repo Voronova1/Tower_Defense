@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PT_Buildings_mat
   m_Shader: {fileID: 4800000, guid: 255b400e6b8ac644588946664da1ff3f, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GRADIENT_ON
@@ -26,6 +28,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -85,18 +88,18 @@ Material:
     - _WorldObjectposition: 0
     - __dirty: 0
     m_Colors:
-    - _Ceramictiles1color: {r: 0.4716981, g: 0.07622343, b: 0, a: 1}
+    - _Ceramictiles1color: {r: 0.122641504, g: 0.04425025, b: 0.029503377, a: 1}
     - _Ceramictiles2color: {r: 0.20507877, g: 0.017641952, b: 0.015208514, a: 1}
-    - _Ceramictiles3color: {r: 0.3679245, g: 0.047693916, b: 0, a: 1}
+    - _Ceramictiles3color: {r: 0.11320752, g: 0.03541428, b: 0.024029901, a: 1}
     - _Coatofarmscolor: {r: 1, g: 0, b: 0, a: 0}
-    - _Exteriorwalls1colour: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
-    - _Exteriorwalls2color: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
-    - _Exteriorwalls3color: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
-    - _Fabric1color: {r: 0.5849056, g: 0.5418971, b: 0.4331613, a: 0}
+    - _Exteriorwalls1colour: {r: 0.1509434, g: 0.11852528, b: 0.050551802, a: 1}
+    - _Exteriorwalls2color: {r: 0.07075471, g: 0.052325528, b: 0.013683693, a: 1}
+    - _Exteriorwalls3color: {r: 0.042452827, g: 0.032817923, b: 0.012615698, a: 1}
+    - _Fabric1color: {r: 0.09433961, g: 0.08216492, b: 0.05117479, a: 0}
     - _Fabric2color: {r: 0.3649431, g: 0.5566038, b: 0.4386422, a: 0}
     - _Fabric3color: {r: 0.5450981, g: 0.6936808, b: 0.6980392, a: 0}
     - _Groundcolor: {r: 0, g: 0, b: 0, a: 1}
-    - _Haycolor: {r: 0.764151, g: 0.517899, b: 0.1622019, a: 1}
+    - _Haycolor: {r: 0.122641504, g: 0.0831196, b: 0.026032398, a: 1}
     - _Interiorwallscolor: {r: 0.507743, g: 0.64102936, b: 0.6603774, a: 0}
     - _Metal1color: {r: 0.385947, g: 0.5532268, b: 0.5566038, a: 0}
     - _Metal2color: {r: 1.7633113, g: 0.5262238, b: 0, a: 0}
@@ -106,7 +109,8 @@ Material:
     - _Rock2color: {r: 0.20122819, g: 0.28300953, b: 0.3207547, a: 0}
     - _Ropecolor: {r: 0.6037736, g: 0.5810711, b: 0.3389106, a: 1}
     - _Topcolor: {r: 1, g: 0.98013073, b: 0.9386792, a: 1}
-    - _Wood1color: {r: 0.4056604, g: 0.2683544, b: 0.135858, a: 1}
-    - _Wood2color: {r: 0.24528301, g: 0.10263903, b: 0.059006754, a: 1}
-    - _Wood3color: {r: 0.2735849, g: 0.1579125, b: 0.04774831, a: 1}
+    - _Wood1color: {r: 0.1792453, g: 0.105699524, b: 0.036356356, a: 1}
+    - _Wood2color: {r: 0.122641504, g: 0.054414935, b: 0.034131363, a: 1}
+    - _Wood3color: {r: 0.084905684, g: 0.04906797, b: 0.015619444, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
