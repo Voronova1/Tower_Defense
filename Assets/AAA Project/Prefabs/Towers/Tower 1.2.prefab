@@ -709,3 +709,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   oasisCheckRadius: 15
+  shootSound: {fileID: 0}

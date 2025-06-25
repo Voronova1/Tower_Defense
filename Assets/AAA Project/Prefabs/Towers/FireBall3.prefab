@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 40
-  damage: 15
+  damage: 7
   whatIsSolid:
     serializedVersion: 2
     m_Bits: 64
