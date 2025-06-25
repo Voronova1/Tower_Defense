@@ -10,6 +10,17 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameObject activeButtonPrefab;
     [SerializeField] private GameObject inactiveButtonPrefab;
 
+    [Header("Settings UI")]
+    [SerializeField] private Canvas mainCanvas;
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject resetConfirmationPanel;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button closeSettingsButton;
+    [SerializeField] private Button quitButton;
+    [SerializeField] private Button resetProgressButton;
+    [SerializeField] private Button confirmResetButton;
+    [SerializeField] private Button cancelResetButton;
+
     [Header("Debug")]
     [SerializeField] private bool debugMode = true;
 
@@ -23,7 +34,89 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
+        SetupUIElements();
         UpdateLevelButtons();
+    }
+
+    private void SetupUIElements()
+    {
+        // Устанавливаем максимальный порядок в отрисовке для панелей
+        settingsPanel.transform.SetAsLastSibling();
+        resetConfirmationPanel.transform.SetAsLastSibling();
+
+        // Настройка кнопок
+        settingsButton.onClick.AddListener(OpenSettings);
+        closeSettingsButton.onClick.AddListener(CloseSettings);
+        quitButton.onClick.AddListener(QuitGame);
+        resetProgressButton.onClick.AddListener(ShowResetConfirmation);
+        confirmResetButton.onClick.AddListener(ConfirmResetProgress);
+        cancelResetButton.onClick.AddListener(CancelResetProgress);
+
+        // Скрываем панели при старте
+        settingsPanel.SetActive(false);
+        resetConfirmationPanel.SetActive(false);
+    }
+
+    private void OpenSettings()
+    {
+        if (debugMode) Debug.Log("Opening settings panel");
+
+        // Делаем панель последним дочерним элементом (поверх всего)
+        settingsPanel.transform.SetAsLastSibling();
+        settingsPanel.SetActive(true);
+
+        // Блокируем взаимодействие с кнопками уровней
+        SetLevelButtonsInteractable(false);
+    }
+
+    private void CloseSettings()
+    {
+        if (debugMode) Debug.Log("Closing settings panel");
+        settingsPanel.SetActive(false);
+
+        // Восстанавливаем взаимодействие с кнопками уровней
+        SetLevelButtonsInteractable(true);
+    }
+
+    private void ShowResetConfirmation()
+    {
+        if (debugMode) Debug.Log("Showing reset confirmation");
+
+        // Делаем панель подтверждения последним дочерним элементом
+        resetConfirmationPanel.transform.SetAsLastSibling();
+        resetConfirmationPanel.SetActive(true);
+    }
+
+    private void ConfirmResetProgress()
+    {
+        if (debugMode) Debug.Log("Resetting all progress");
+        ResetAllProgress();
+        resetConfirmationPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+
+        // Восстанавливаем взаимодействие с кнопками уровней
+        SetLevelButtonsInteractable(true);
+    }
+
+    private void CancelResetProgress()
+    {
+        if (debugMode) Debug.Log("Cancel reset progress");
+        resetConfirmationPanel.SetActive(false);
+    }
+
+    private void SetLevelButtonsInteractable(bool interactable)
+    {
+        foreach (var button in levelButtons)
+        {
+            if (button != null)
+            {
+                var btnComponent = button.GetComponent<Button>();
+                if (btnComponent != null)
+                {
+                    btnComponent.interactable = interactable;
+                }
+            }
+        }
     }
 
     private bool ValidateDependencies()
@@ -35,7 +128,7 @@ public class LevelManager : MonoBehaviour
             return false;
         }
 
-        // Проверка кнопок
+        // Проверка кнопок уровней
         if (levelButtons == null || levelButtons.Length == 0)
         {
             Debug.LogError("Level buttons array is not set or empty!");
@@ -43,15 +136,19 @@ public class LevelManager : MonoBehaviour
         }
 
         // Проверка префабов
-        if (activeButtonPrefab == null)
+        if (activeButtonPrefab == null || inactiveButtonPrefab == null)
         {
-            Debug.LogError("Active button prefab is not assigned!");
+            Debug.LogError("Button prefabs are not assigned!");
             return false;
         }
 
-        if (inactiveButtonPrefab == null)
+        // Проверка UI элементов
+        if (settingsPanel == null || resetConfirmationPanel == null ||
+            settingsButton == null || closeSettingsButton == null ||
+            quitButton == null || resetProgressButton == null ||
+            confirmResetButton == null || cancelResetButton == null)
         {
-            Debug.LogError("Inactive button prefab is not assigned!");
+            Debug.LogError("Some UI elements are not assigned!");
             return false;
         }
 
