@@ -1729,7 +1729,7 @@ MonoBehaviour:
   currentLevelType: 0
   playerHealth: 5
   healthText: {fileID: 724979052}
-  money: 100
+  money: 130
   moneyText: {fileID: 1675905877}
   levelFailedPanel: {fileID: 1903469028}
   levelCompletePanel: {fileID: 1657692538}
@@ -3378,14 +3378,26 @@ MonoBehaviour:
     altWaypointTag: MovingPoint2
     waves:
     - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
-      mobCount: 6
+      mobCount: 15
       spawnRate: 1
+    - mobPrefab: {fileID: 5483803760368986092, guid: 22bf4f8c3ade2fe4bbd346d330580d33, type: 3}
+      mobCount: 10
+      spawnRate: 0.75
     - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
-      mobCount: 6
-      spawnRate: 1
+      mobCount: 20
+      spawnRate: 3
+    - mobPrefab: {fileID: 5483803760368986092, guid: 22bf4f8c3ade2fe4bbd346d330580d33, type: 3}
+      mobCount: 20
+      spawnRate: 2
+    - mobPrefab: {fileID: 5483803760368986092, guid: 27979fd56c19c2c4895d840283bf3038, type: 3}
+      mobCount: 15
+      spawnRate: 2
     - mobPrefab: {fileID: 5483803760368986092, guid: 6a3a63e830d40834a8b3a67fdec45b17, type: 3}
-      mobCount: 6
-      spawnRate: 1
+      mobCount: 30
+      spawnRate: 2.5
+    - mobPrefab: {fileID: 5483803760368986092, guid: 22bf4f8c3ade2fe4bbd346d330580d33, type: 3}
+      mobCount: 30
+      spawnRate: 3
     waypoints: []
     altWaypoints: []
   timeBetweenWaves: 2

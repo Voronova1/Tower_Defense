@@ -1207,8 +1207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerType: 0
   maxTargets: 3
-  attackRadius: 40
-  startTimeBtwAttack: 6
+  attackRadius: 30
+  startTimeBtwAttack: 1.75
   bulletPrefab: {fileID: 6921824203374264943, guid: 503ff8e45a95d3c428b5c4a191412fa3, type: 3}
   shootPoint: {fileID: 2042167716502792350}
   nextTower: {fileID: 9067326546978148165, guid: 0b6c63ea788c1d44586cfee4141f95c0, type: 3}
@@ -1219,3 +1219,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   oasisCheckRadius: 15
+  shootSound: {fileID: 0}

@@ -122,9 +122,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 366d0b13f51f9e848a3afeeb492ac2d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
-  health: 6
-  loot: 17
+  baseSpeed: 8
+  rotationSpeed: 10
+  arrivalDistance: 0.1
+  health: 10
+  loot: 11
 --- !u!1001 &4768725930752984078
 PrefabInstance:
   m_ObjectHideFlags: 0

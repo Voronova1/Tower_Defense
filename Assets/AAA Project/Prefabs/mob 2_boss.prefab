@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4370383783874164733}
   - component: {fileID: 4820795338442195983}
   m_Layer: 6
-  m_Name: mob 2
+  m_Name: mob 2_boss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 5483803760368986092}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.2, y: 1.1122, z: -13.133}
-  m_LocalScale: {x: 4.5934606, y: 4.5934606, z: 4.5934606}
+  m_LocalPosition: {x: 5.2, y: 1.0211, z: -13.143}
+  m_LocalScale: {x: 5.0808268, y: 5.0808268, z: 5.0808268}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7587385812999552068}
@@ -125,7 +125,7 @@ MonoBehaviour:
   baseSpeed: 10
   rotationSpeed: 10
   arrivalDistance: 0.1
-  health: 15
+  health: 25
   loot: 15
 --- !u!1001 &1562711147226087251
 PrefabInstance:

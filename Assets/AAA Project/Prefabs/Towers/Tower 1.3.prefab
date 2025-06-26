@@ -871,7 +871,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerType: 1
   maxTargets: 3
-  attackRadius: 35
+  attackRadius: 30
   startTimeBtwAttack: 1
   bulletPrefab: {fileID: 4712167417031027191, guid: 22540823c337ee142a062020442fca6a, type: 3}
   shootPoint: {fileID: 2042167716502792350}
