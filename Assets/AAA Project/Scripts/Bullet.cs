@@ -15,6 +15,9 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public Tower tower;
 
     private AudioSource audioSource;
+    private Vector3 lastPosition;
+    private float distanceTraveled;
+    private const float maxDistance = 50f; // Макс. дистанция полета
 
     void Start()
     {
@@ -24,6 +27,7 @@ public class Bullet : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
         }
         audioSource.playOnAwake = false;
+        lastPosition = transform.position;
     }
 
     void Update()
@@ -34,30 +38,56 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        Vector3 dir = target.transform.position - transform.position;
-        transform.rotation = Quaternion.LookRotation(dir) * Quaternion.Euler(90, 0, 0);
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
+        // Сохраняем предыдущую позицию для проверки коллизий
+        lastPosition = transform.position;
 
-        if (Physics.Raycast(transform.position, dir.normalized, out RaycastHit hitInfo, 2f, whatIsSolid))
+        // Движение снаряда (оригинальная логика)
+        Vector3 dir = (target.transform.position - transform.position).normalized;
+        transform.rotation = Quaternion.LookRotation(dir) * Quaternion.Euler(90, 0, 0);
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position,
+                                               speed * Time.deltaTime * Time.timeScale);
+
+        // Проверка дистанции (чтобы снаряды не летели вечно)
+        distanceTraveled += Vector3.Distance(lastPosition, transform.position);
+        if (distanceTraveled > maxDistance)
         {
-            if (hitInfo.collider.CompareTag("Enemy") && hitInfo.collider.TryGetComponent<MovementMobs>(out var enemy))
+            Destroy(gameObject);
+            return;
+        }
+
+        // Улучшенная проверка коллизий
+        CheckCollision();
+    }
+
+    private void CheckCollision()
+    {
+        // Рассчитываем пройденное расстояние за кадр
+        float frameDistance = Vector3.Distance(lastPosition, transform.position);
+
+        // Используем SphereCast для надежного обнаружения коллизий
+        if (Physics.SphereCast(lastPosition, 0.3f, (transform.position - lastPosition).normalized,
+            out RaycastHit hitInfo, frameDistance * 1.1f, whatIsSolid))
+        {
+            if (hitInfo.collider.CompareTag("Enemy"))
             {
-                PlayHitEffects(hitInfo.point);
-                enemy.TakeDamage(damage);
-                Destroy(gameObject);
+                MovementMobs enemy = hitInfo.collider.GetComponent<MovementMobs>();
+                if (enemy != null)
+                {
+                    PlayHitEffects(hitInfo.point);
+                    enemy.TakeDamage(damage);
+                    Destroy(gameObject);
+                }
             }
         }
     }
 
     private void PlayHitEffects(Vector3 hitPosition)
     {
-        // Воспроизведение звука
         if (hitSound != null)
         {
             audioSource.PlayOneShot(hitSound);
         }
 
-        // Создание эффекта попадания
         if (hitEffect != null)
         {
             ParticleSystem effect = Instantiate(hitEffect, hitPosition, Quaternion.identity);

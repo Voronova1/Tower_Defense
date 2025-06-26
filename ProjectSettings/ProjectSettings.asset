@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: Company
   productName: "\u0413\u0440\u0430\u043D\u044C \u043C\u0438\u0440\u043E\u0432: \u041E\u0431\u043E\u0440\u043E\u043D\u0430"
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -164,6 +164,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
+    Android: com.Company.TD
     Standalone: com.DefaultCompany.3D-Project
   buildNumber:
     Standalone: 0
