@@ -702,7 +702,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4712167417031027191, guid: 1d314c437aa16b648b9011bdbd025487, type: 3}
   shootPoint: {fileID: 2042167716502792350}
   nextTower: {fileID: 9067326546978148165, guid: e21be2b60f33d724e8b2e2b719a8bce6, type: 3}
-  cost: 160
+  cost: 130
   desertSpeedMultiplier: 0.7
   desertFireRateMultiplier: 2
   oasisLayer:

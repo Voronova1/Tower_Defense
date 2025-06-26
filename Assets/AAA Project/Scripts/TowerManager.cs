@@ -396,7 +396,7 @@ public class TowerManager : MonoBehaviour
             TMP_Text sellPriceText = contextMenuUp.transform.Find("TextCostSell")?.GetComponent<TMP_Text>();
 
             if (upgradePriceText != null)
-                upgradePriceText.text = Mathf.RoundToInt(tower.cost * 1.6f).ToString();
+                upgradePriceText.text = Mathf.RoundToInt(tower.cost * 1.3f).ToString();
 
             if (sellPriceText != null)
                 sellPriceText.text = Mathf.RoundToInt(tower.cost * 0.6f).ToString();
@@ -410,7 +410,7 @@ public class TowerManager : MonoBehaviour
 
             // Устанавливаем цены
             if (upgradePriceText != null)
-                upgradePriceText.text = Mathf.RoundToInt(tower.cost * 1.6f).ToString();
+                upgradePriceText.text = Mathf.RoundToInt(tower.cost * 1.3f).ToString();
 
             if (sellPriceText != null)
                 sellPriceText.text = Mathf.RoundToInt(tower.cost * 0.6f).ToString();
@@ -486,7 +486,7 @@ public class TowerManager : MonoBehaviour
         var tower = selectedTower.GetComponent<Tower>();
         if (tower == null || tower.nextTower == null) return;
 
-        int upgradeCost = (int)Mathf.Round(tower.cost * 1.6f);
+        int upgradeCost = (int)Mathf.Round(tower.cost * 1.3f);
         if (GameManager.Instance.money - upgradeCost >= 0)
         {
             GameManager.Instance.ChangeMoney(-upgradeCost);
